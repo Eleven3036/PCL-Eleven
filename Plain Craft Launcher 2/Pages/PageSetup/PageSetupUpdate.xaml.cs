@@ -75,10 +75,13 @@ public partial class PageSetupUpdate
                 Exception checkUpdateEx = null;
                 try
                 {
-                    updateInfo = UpdateManager.remoteServer.GetLatestVersion(
+                    // 关键：GetLatestVersion 内部会在 _latestRelease 为 null 时调 RefreshCache()
+                    // → .GetResult() 同步阻塞。如果放在 UI 线程上，就是经典死锁。
+                    // 这里必须用 Task.Run 包到后台线程执行！
+                    updateInfo = await Task.Run(() => UpdateManager.remoteServer.GetLatestVersion(
                         UpdateManager.IsCurrentVersionBeta
                             ? UpdateChannel.beta
-                            : UpdateChannel.stable, SystemInfo.IsArm64System ? UpdateArch.arm64 : UpdateArch.x64);
+                            : UpdateChannel.stable, SystemInfo.IsArm64System ? UpdateArch.arm64 : UpdateArch.x64));
                     TextUpdateName.Text = "PCL-Eleven " + VersionNameFormat(updateInfo.VersionName);
                     var summary = updateInfo.Changelog.Between("<summary>", "</summary>");
                     if (!updateInfo.Changelog.Contains("<summary>") || string.IsNullOrWhiteSpace(summary.Trim()))

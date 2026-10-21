@@ -36,7 +36,10 @@ public class UpdatesGitHubModel : IUpdateSource
         try
         {
             var url = $"https://api.github.com/repos/{_owner}/{_repo}/releases/latest";
-            using var client = new HttpClient();
+            using var client = new HttpClient
+            {
+                Timeout = TimeSpan.FromSeconds(15)  // 15s 超时，防止 GitHub API 卡住阻塞主线程
+            };
             client.DefaultRequestHeaders.Add("User-Agent", "PCL-Eleven-Launcher");
             // 关键：ConfigureAwait(false) 防止在 UI 线程上调用 .GetResult() 造成死锁。
             // 这个方法会从 PageSetupUpdate.CheckUpdate (UI 线程 await) 链路调用，
