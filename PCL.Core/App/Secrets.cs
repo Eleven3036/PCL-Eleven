@@ -9,12 +9,12 @@ public static class Secrets
     /// <summary>
     /// 微软 OAuth 的 Client ID
     /// </summary>
-    public static string MSOAuthClientId { get; } = EnvironmentInterop.GetSecret("MS_CLIENT_ID", readEnvDebugOnly: true).ReplaceNullOrEmpty("c36a9fb6-4f2a-41ff-90bd-ae7cc92031eb");
+    public static string MSOAuthClientId { get; } = EnvironmentInterop.GetSecret("MS_CLIENT_ID", readEnvDebugOnly: true).ReplaceNullOrEmpty();
 
     /// <summary>
     /// CurseForge API 的 Client ID
     /// </summary>
-    public static string CurseForgeAPIKey { get; } = EnvironmentInterop.GetSecret("CURSEFORGE_API_KEY", readEnvDebugOnly: true).ReplaceNullOrEmpty("$2a$10$n4o92bcFN2hJvZ/S6iL9Ye6zDIdwTIg.ZJy9n9XpKnnYrYeVelTO2");
+    public static string CurseForgeAPIKey { get; } = EnvironmentInterop.GetSecret("CURSEFORGE_API_KEY", readEnvDebugOnly: true).ReplaceNullOrEmpty();
 
     /// <summary>
     /// 遥测密钥
