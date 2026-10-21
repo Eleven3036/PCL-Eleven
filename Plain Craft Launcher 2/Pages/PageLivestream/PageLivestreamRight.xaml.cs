@@ -50,6 +50,23 @@ public partial class PageLivestreamRight : MyPageRight
         [JsonPropertyName("rooms")] public List<RoomItem> Rooms { get; set; } = [];
     }
 
+    /// <summary>live_status.php 返回的实时状态检测结果</summary>
+    public class LiveStatusResponse
+    {
+        [JsonPropertyName("ok")] public bool Ok { get; set; }
+        [JsonPropertyName("timestamp")] public long Timestamp { get; set; }
+        [JsonPropertyName("rooms")] public List<LiveStatusRoom> Rooms { get; set; } = [];
+    }
+
+    public class LiveStatusRoom
+    {
+        [JsonPropertyName("id")] public string Id { get; set; } = "";
+        [JsonPropertyName("platform")] public string Platform { get; set; } = "";
+        [JsonPropertyName("room_id")] public string RoomId { get; set; } = "";
+        [JsonPropertyName("online")] public bool? Online { get; set; }
+        [JsonPropertyName("source")] public string Source { get; set; } = "";
+    }
+
     // ============== 字段 ==============
 
     private readonly ObservableCollection<RoomItem> _visibleRooms = [];
@@ -107,8 +124,9 @@ public partial class PageLivestreamRight : MyPageRight
         {
             using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(15));
             using var client = new HttpClient();
-            using var resp = await client.GetAsync(ApiUrl, cts.Token);
 
+            // ---- 第1步：拉 live_list.php（数据库里的直播间列表，status 是静态值） ----
+            using var resp = await client.GetAsync(ApiUrl, cts.Token);
             if (!resp.IsSuccessStatusCode)
                 throw new HttpRequestException($"HTTP {(int)resp.StatusCode} {resp.ReasonPhrase}");
 
@@ -119,17 +137,59 @@ public partial class PageLivestreamRight : MyPageRight
                 ReadCommentHandling = JsonCommentHandling.Skip,
             };
             var data = JsonSerializer.Deserialize<LiveListResponse>(content, jsonOpts);
-
             if (data is null || !data.Ok)
                 throw new InvalidOperationException(Lang.Text("Livestream.Right.ApiFailed"));
 
             _allRooms = data.Rooms?.OrderBy(r => r.SortOrder).ToList() ?? [];
+
+            // ---- 第2步：拉 live_status.php（实时检测每个房间是否开播） ----
+            // 官网 room.html 也会主动调这个 API 刷新状态；启动器这边必须同步做，
+            // 否则 live_list.php 的 status 是数据库静态值（永远 offline）。
+            await TryRefreshRealTimeStatusAsync(client, jsonOpts, cts.Token);
+
             ApplyFilter();
         }
         catch (Exception ex)
         {
             LogWrapper.Error(ex, "直播间列表加载失败");
             ShowError(Lang.Text("Livestream.Right.LoadFailed", ex.Message));
+        }
+    }
+
+    /// <summary>
+    /// 调 live_status.php 刷新每个房间的实时开播状态。
+    /// 失败时静默忽略（保留数据库静态值），不影响主流程。
+    /// </summary>
+    private async Task TryRefreshRealTimeStatusAsync(HttpClient client, JsonSerializerOptions jsonOpts, CancellationToken ct)
+    {
+        try
+        {
+            using var resp = await client.GetAsync($"{SiteBase}/api/live_status.php", ct);
+            if (!resp.IsSuccessStatusCode) return;
+
+            var text = await resp.Content.ReadAsStringAsync(ct);
+            var statusData = JsonSerializer.Deserialize<LiveStatusResponse>(text, jsonOpts);
+            if (statusData is null || !statusData.Ok || statusData.Rooms.Count == 0) return;
+
+            // 建 id→Online 字典，O(1) 匹配
+            var onlineMap = statusData.Rooms
+                .Where(s => !string.IsNullOrEmpty(s.Id) && s.Online.HasValue)
+                .ToDictionary(s => s.Id, s => s.Online!.Value);
+
+            // 覆盖每个 RoomItem 的状态
+            foreach (var room in _allRooms)
+            {
+                if (onlineMap.TryGetValue(room.Id, out var online))
+                {
+                    room.Status = online ? "online" : "offline";
+                    room.StatusLabel = online ? "直播中" : "未开播";
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            // 实时状态刷新失败不应阻塞主流程（数据库静态值够用了）
+            LogWrapper.Warn(ex, "直播间实时状态刷新失败（忽略，使用数据库静态值）");
         }
     }
 
@@ -206,7 +266,9 @@ public partial class PageLivestreamRight : MyPageRight
             await EnsureWebView2CoreAsync();
 
             // 加载官网直播间页面（它包含完整的 flv.js / hls.js 播放逻辑）
-            var roomPageUrl = $"{SiteBase}/room.html?id={room.RoomId}&platform={room.Platform}";
+            // 注意：room.html 用 api/live.php 的 rooms[i].id（rm_ 主键）匹配，
+            // 用 room_id（B站房间号 31904815）匹配不上，会显示"直播间不存在"！
+            var roomPageUrl = $"{SiteBase}/room.html?id={room.Id}";
             WebView.Source = new Uri(roomPageUrl);
 
             WebView.NavigationCompleted -= OnWebViewNavigationCompleted;
