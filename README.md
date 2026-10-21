@@ -64,11 +64,6 @@ PCL-Eleven/
 └── PCL-Eleven.sln
 ```
 
-## 开发注意事项
-
-- 所有 API 密钥（MS_CLIENT_ID、CURSEFORGE_API_KEY 等）**不会**硬编码在源码里，请通过环境变量或 GitHub Actions Secrets 配置
-- `Secrets.cs` 里所有密钥均为 `.ReplaceNullOrEmpty()`（无默认值），未配置时为空字符串
-
 ## License
 
 本项目基于 **GNU General Public License v3.0** 开源，详见 [LICENSE](LICENSE) 文件。
