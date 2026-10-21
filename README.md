@@ -26,20 +26,23 @@ PCL-Eleven 是基于 [PCL（Plain Craft Launcher）](https://github.com/Meloong-
 - 版本：**v11.1.0**（首个独立品牌版本）
 - 协议：**GPL-3.0**
 
-> ```
 > 原 PCL（Plain Craft Launcher）作者：龙腾猫跃
+>
 > PCL Community Edition 社区团队：PCL-Community
->     （因不可逆原因停止 Minecraft 本体下载功能）
+>
+> &#x20;   （因不可逆原因停止 Minecraft 本体下载功能）
 >
 > PCL-Eleven 二次开发作者：Eleven
->     （基于 PCL-Community/PCL-CE 源码二次开发，恢复了 Minecraft 本体下载
->      功能，作为独立品牌分支发布）
+>
+> &#x20;   （基于 PCL-Community/PCL-CE 源码二次开发，恢复了 Minecraft 本体下载
+>
+> &#x20;    功能，作为独立项目发布）
 >
 > 如您在使用 PCL-Eleven 过程中遇到任何问题，请反馈给 Eleven：
->     https://github.com/Eleven3036/PCL-Eleven/issues
 >
-> 请不要向龙腾猫跃或 PCL-Community 反馈 PCL-Eleven 的问题。感谢配合。
-> ```
+> &#x20;   https\://github.com/Eleven3036/PCL-Eleven/issues
+>
+> 请不要向龙腾猫跃以及 PCL-Community 反馈 PCL-Eleven 的问题。感谢配合。
 
 ***
 
