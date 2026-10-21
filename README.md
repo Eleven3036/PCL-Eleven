@@ -1,8 +1,8 @@
-**简体中文** | [English](README-EN.md) | [繁體中文](README-ZH_TW.md)
+﻿**简体中文** | [English](README-EN.md) | [繁體中文](README-ZH_TW.md)
 
 <div align="center">
 
-![Logo](icon.png)
+![PCL-Eleven](logo.png)
 
 # PCL-Eleven
 
@@ -76,3 +76,4 @@ PCL-Eleven/
 本项目基于 **GNU General Public License v3.0** 开源，详见 [LICENSE](LICENSE) 文件。
 
 PCL 开源基础工程基于 PCL-Community/PCL-CE 源码二次开发，保留原始版权声明。
+
