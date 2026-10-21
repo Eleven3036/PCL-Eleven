@@ -2,8 +2,6 @@
 
 <div align="center">
 
-![PCL-Eleven](logo.png)
-
 # PCL-Eleven
 
 [![Stars](https://img.shields.io/github/stars/Eleven3036/PCL-Eleven?style=for-the-badge&label=stars&labelColor=444444&color=eac54f)](https://github.com/Eleven3036/PCL-Eleven/)
