@@ -16,7 +16,7 @@
 [![License](https://img.shields.io/badge/license-GPL--3.0-green?style=for-the-badge\&labelColor=444444)](LICENSE)
 
 [下载](https://github.com/Eleven3036/PCL-Eleven/releases/latest) |
-[官网](https://your-domain.com)
+[官网](https://pcl-eleven.furina3036.online/)
 
 [提交问题](https://github.com/Eleven3036/PCL-Eleven/issues/new/choose)
 
@@ -41,9 +41,9 @@
 
 ## 项目简介
 
-**PCL-Eleven** 是基于 PCL（Plain Craft Launcher）开源代码二次开发的独立品牌分支，由 **Eleven** 制作，GPL-3.0 协议。
+**PCL-Eleven** 是基于 PCL（Plain Craft Launcher）开源代码二次开发的独立项目，由 **Eleven** 制作，GPL-3.0 协议。
 
-原 PCL-Community 社区因不可逆原因停止了 Minecraft 本体下载功能，PCL-Eleven 恢复了该功能，并持续进行独立迭代开发。
+原 PCL以及PCL-Community 社区版因不可逆原因停止了 Minecraft 本体下载功能，PCL-Eleven 恢复了该功能，并持续进行独立迭代开发。
 
 ## 技术栈
 
@@ -54,18 +54,6 @@
 | UI 框架 | WPF                            |
 | 发布方式  | 单文件自包含发布 (win-x64 / win-arm64) |
 | 协议    | GPL-3.0                        |
-
-## 本地构建
-
-```powershell
-# 进入项目根目录（含 .sln 的目录）
-cd PCL-Eleven
-
-# 发布为单文件自包含 exe（绿色免安装）
-dotnet publish "Plain Craft Launcher 2/Plain Craft Launcher 2.csproj" -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true -o "发布版"
-```
-
-输出：`发布版/PCL-Eleven.exe`（约 85MB，双击即可运行）
 
 ## 解决方案结构
 
