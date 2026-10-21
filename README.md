@@ -8,12 +8,12 @@
 
 # PCL-Eleven
 
-[![Stars](https://img.shields.io/github/stars/Eleven3036/PCL-Eleven?style=for-the-badge&logo=github&label=stars)](https://github.com/Eleven3036/PCL-Eleven)
-![GitHub Release](https://img.shields.io/github/v/release/Eleven3036/PCL-Eleven?label=release&logo=github&style=for-the-badge)
+[![Stars](https://img.shields.io/github/stars/Eleven3036/PCL-Eleven?style=for-the-badge\&logo=github\&label=stars)](https://github.com/Eleven3036/PCL-Eleven)
+![GitHub Release](https://img.shields.io/github/v/release/Eleven3036/PCL-Eleven?label=release\&logo=github\&style=for-the-badge)
 ![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/Eleven3036/PCL-Eleven/build-test.yml?style=for-the-badge)
 
-[![Issues](https://img.shields.io/github/issues/Eleven3036/PCL-Eleven?style=for-the-badge&label=issues&labelColor=444444&color=1F883D&logo=github)](https://github.com/Eleven3036/PCL-Eleven/issues)
-[![Pull requests](https://img.shields.io/github/issues-pr/Eleven3036/PCL-Eleven?style=for-the-badge&label=pull%20requests&labelColor=444444&color=1F883D&logo=github)](https://github.com/Eleven3036/PCL-Eleven/pulls)
+[![Issues](https://img.shields.io/github/issues/Eleven3036/PCL-Eleven?style=for-the-badge\&label=issues\&labelColor=444444\&color=1F883D\&logo=github)](https://github.com/Eleven3036/PCL-Eleven/issues)
+[![Pull requests](https://img.shields.io/github/issues-pr/Eleven3036/PCL-Eleven?style=for-the-badge\&label=pull%20requests\&labelColor=444444\&color=1F883D\&logo=github)](https://github.com/Eleven3036/PCL-Eleven/pulls)
 
 [下载最新版本](https://github.com/Eleven3036/PCL-Eleven/releases/latest) |
 [提交问题](https://github.com/Eleven3036/PCL-Eleven/issues/new/choose)
@@ -26,24 +26,31 @@ PCL-Eleven 是基于 [PCL（Plain Craft Launcher）](https://github.com/Meloong-
 - 版本：**v11.1.0**（首个独立品牌版本）
 - 协议：**GPL-3.0**
 
-> PCL-Eleven 的版本号与上游主线并非严格对应，请不要向上游仓库反馈本分支的问题。
-
-> 原PCL作者：龙腾猫跃，社区版团队：PCLCommunity，由不可逆原因停止mc本体下载
+> ```
+> 原 PCL（Plain Craft Launcher）作者：龙腾猫跃
+> PCL Community Edition 社区团队：PCL-Community
+>     （因不可逆原因停止 Minecraft 本体下载功能）
 >
-> PCL-Eleven作者：Eleven二次开发创建PCL-Eleven恢复mc本体下载功能
+> PCL-Eleven 二次开发作者：Eleven
+>     （基于 PCL-Community/PCL-CE 源码二次开发，恢复了 Minecraft 本体下载
+>      功能，作为独立品牌分支发布）
 >
-> 如该启动器有问题请反馈给Eleven，请不要反馈给龙腾猫跃以及PCL Community。感谢配合
+> 如您在使用 PCL-Eleven 过程中遇到任何问题，请反馈给 Eleven：
+>     https://github.com/Eleven3036/PCL-Eleven/issues
+>
+> 请不要向龙腾猫跃或 PCL-Community 反馈 PCL-Eleven 的问题。感谢配合。
+> ```
 
----
+***
 
 ## 💻 支持平台
 
-| 操作系统 | 支持情况 | 环境要求 |
-|---|---|---|
-| Windows 10 1809 (17763) 或更高 | ✅ 完整支持 | [.NET 10 Desktop Runtime](https://get.dot.net/10) |
-| Windows 8 - Windows 10 1809 (17763) | ⚠️ 理论能跑，酌情提供社区支持 | [.NET 10 Desktop Runtime](https://get.dot.net/10) |
-| Windows 7 或更低版本 | ❌ 不支持 | / |
-| macOS / Linux / 其他操作系统 | ⚠️ 仅跨平台开发支持（交叉编译） | [.NET 10 SDK](https://get.dot.net/10) |
+| 操作系统                                | 支持情况              | 环境要求                                              |
+| ----------------------------------- | ----------------- | ------------------------------------------------- |
+| Windows 10 1809 (17763) 或更高         | ✅ 完整支持            | [.NET 10 Desktop Runtime](https://get.dot.net/10) |
+| Windows 8 - Windows 10 1809 (17763) | ⚠️ 理论能跑，酌情提供社区支持  | [.NET 10 Desktop Runtime](https://get.dot.net/10) |
+| Windows 7 或更低版本                     | ❌ 不支持             | /                                                 |
+| macOS / Linux / 其他操作系统              | ⚠️ 仅跨平台开发支持（交叉编译） | [.NET 10 SDK](https://get.dot.net/10)             |
 
 **✅ 完整支持**：尽可能提供一切相关支持，但必须确保启动器为最新版本。
 
@@ -77,6 +84,6 @@ dotnet publish "Plain Craft Launcher 2/Plain Craft Launcher 2.csproj" -c Release
 
 本项目采用 [GPL-3.0](LICENSE) 协议开源。
 
-## ❤️ 贡献者
+<br />
 
 [![](https://contrib.rocks/image?repo=Eleven3036/PCL-Eleven)](https://github.com/Eleven3036/PCL-Eleven/graphs/contributors)
