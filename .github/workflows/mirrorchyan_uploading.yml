@@ -30,11 +30,11 @@ jobs:
         with:
           filetype: latest-release
           filename: "PCL2_CE_${{ inputs.channel == 'stable' && 'Release' || 'Beta' }}_${{ inputs.arch == 'x64' && 'x64' || 'ARM64' }}.exe"
-          mirrorchyan_rid: PCL2-CE
+          mirrorchyan_rid: PCL-Eleven
 
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          owner: PCL-Community
-          repo: PCL2-CE
+          owner: Eleven3036
+          repo: PCL-Eleven
           upload_token: ${{ secrets.MirrorChyanUploadToken }}
           os: win
           arch: ${{ inputs.arch }}

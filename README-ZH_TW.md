@@ -4,31 +4,29 @@
 
 <img src="Plain Craft Launcher 2/Images/icon.ico" alt="Logo" width="80" height="80">
 
-# PCL Community Edition
+# PCL-Eleven
 
-[![Stars](https://img.shields.io/github/stars/PCL-Community/PCL-CE?style=for-the-badge&logo=data:image/svg%2bxml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZlcnNpb249IjEiIHdpZHRoPSIxNiIgaGVpZ2h0PSIxNiI+PHBhdGggZD0iTTggLjI1YS43NS43NSAwIDAgMSAuNjczLjQxOGwxLjg4MiAzLjgxNSA0LjIxLjYxMmEuNzUuNzUgMCAwIDEgLjQxNiAxLjI3OWwtMy4wNDYgMi45Ny43MTkgNC4xOTJhLjc1MS43NTEgMCAwIDEtMS4wODguNzkxTDggMTIuMzQ3bC0zLjc2NiAxLjk4YS43NS43NSAwIDAgMS0xLjA4OC0uNzlsLjcyLTQuMTk0TC44MTggNi4zNzRhLjc1Ljc1IDAgMCAxIC40MTYtMS4yOGw0LjIxLS42MTFMNy4zMjcuNjY4QS43NS43NSAwIDAgMSA4IC4yNVoiIGZpbGw9IiNlYWM1NGYiLz48L3N2Zz4=&logoSize=auto&label=stars&labelColor=444444&color=eac54f)](https://github.com/PCL-Community/PCL-CE/)
-![GitHub Release](https://img.shields.io/github/v/release/PCL-Community/PCL-CE?label=release&logo=github&style=for-the-badge)
-![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/PCL-Community/PCL-CE/build-test.yml?style=for-the-badge)
+[![Stars](https://img.shields.io/github/stars/Eleven3036/PCL-Eleven?style=for-the-badge&logo=data:image/svg%2bxml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZlcnNpb249IjEiIHdpZHRoPSIxNiIgaGVpZ2h0PSIxNiI+PHBhdGggZD0iTTggLjI1YS43NS43NSAwIDAgMSAuNjczLjQxOGwxLjg4MiAzLjgxNSA0LjIxLjYxMmEuNzUuNzUgMCAwIDEgLjQxNiAxLjI3OWwtMy4wNDYgMi45Ny43MTkgNC4xOTJhLjc1MS43NTEgMCAwIDEtMS4wODguNzkxTDggMTIuMzQ3bC0zLjc2NiAxLjk4YS43NS43NSAwIDAgMS0xLjA4OC0uNzlsLjcyLTQuMTk0TC44MTggNi4zNzRhLjc1Ljc1IDAgMCAxIC40MTYtMS4yOGw0LjIxLS42MTFMNy4zMjcuNjY4QS43NS43NSAwIDAgMSA4IC4yNVoiIGZpbGw9IiNlYWM1NGYiLz48L3N2Zz4=&logoSize=auto&label=stars&labelColor=444444&color=eac54f)](https://github.com/Eleven3036/PCL-Eleven/)
+![GitHub Release](https://img.shields.io/github/v/release/Eleven3036/PCL-Eleven?label=release&logo=github&style=for-the-badge)
+![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/Eleven3036/PCL-Eleven/build-test.yml?style=for-the-badge)
 
-[![Issues](https://img.shields.io/github/issues/PCL-Community/PCL-CE?style=for-the-badge&label=issues&labelColor=444444&color=1F883D&logo=github)](https://github.com/PCL-Community/PCL-CE/issues)
-[![Pull requests](https://img.shields.io/github/issues-pr/PCL-Community/PCL-CE?style=for-the-badge&label=pull%20requests&labelColor=444444&color=1F883D&logo=github)](https://github.com/PCL-Community/PCL-CE/pulls)
-![GitHub Downloads (all assets, all releases)](https://img.shields.io/github/downloads/PCL-Community/PCL-CE/total?style=for-the-badge)
+[![Issues](https://img.shields.io/github/issues/Eleven3036/PCL-Eleven?style=for-the-badge&label=issues&labelColor=444444&color=1F883D&logo=github)](https://github.com/Eleven3036/PCL-Eleven/issues)
+[![Pull requests](https://img.shields.io/github/issues-pr/Eleven3036/PCL-Eleven?style=for-the-badge&label=pull%20requests&labelColor=444444&color=1F883D&logo=github)](https://github.com/Eleven3036/PCL-Eleven/pulls)
+![GitHub Downloads (all assets, all releases)](https://img.shields.io/github/downloads/Eleven3036/PCL-Eleven/total?style=for-the-badge)
 [![嗶哩嗶哩](https://img.shields.io/badge/貼文-bilibili-00A4DB?style=for-the-badge&labelColor=444444&logo=bilibili)](https://space.bilibili.com/3546847192811755/dynamic) <br />
 
-<a href="https://trendshift.io/repositories/21800?utm_source=trendshift-badge&amp;utm_medium=badge&amp;utm_campaign=badge-trendshift-21800" target="_blank" rel="noopener noreferrer"><img src="https://trendshift.io/api/badge/trendshift/repositories/21800/daily?language=C%23" alt="PCL-Community%2FPCL-CE | Trendshift" width="250" height="55"/></a>
-<a href="https://trendshift.io/repositories/21800" target="_blank"><img src="https://trendshift.io/api/badge/repositories/21800" alt="PCL-Community%2FPCL-CE | Trendshift" style="width: 250px; height: 55px;" width="250" height="55"/></a>
 
-[社群版下載](https://github.com/PCL-Community/PCL-CE/releases/latest) |
+[PCL-Eleven下載](https://github.com/Eleven3036/PCL-Eleven/releases/latest) |
 [上游儲存庫](https://github.com/Meloong-Git/PCL)
 
-[提交問題](https://github.com/PCL-Community/PCL-CE/issues/new/choose) |
-[貢獻指南](https://github.com/PCL-Community/PCL-CE/wiki/开发指南)
+[提交問題](https://github.com/Eleven3036/PCL-Eleven/issues/new/choose) |
+[貢獻指南](https://github.com/Eleven3036/PCL-Eleven/wiki/开发指南)
 
 </div>
 
-PCL-Eleven 是基於 PCL 開放原始碼二次開發的社群版本，包括了主線暫未製作的功能和改進！
+PCL-Eleven 是基於 PCL 開放原始碼二次開發的PCL-Eleven本，包括了主線暫未製作的功能和改進！
 
-社群版的版本號與主線並非嚴格對應關係，也請不要向官方儲存庫回饋社群版問題。
+PCL-Eleven的版本號與主線並非嚴格對應關係，也請不要向官方儲存庫回饋PCL-Eleven問題。
 
 歡迎大家來用用看！
 
@@ -59,15 +57,15 @@ PCL-Eleven 始終建議使用最新版本的作業系統以獲得最佳體驗。
 
 ## 🔒 授權條款
 
-- `Plain Craft Launcher 2/` 使用 [自訂授權條款](https://github.com/PCL-Community/PCL-CE/blob/dev/Plain%20Craft%20Launcher%202/LICENCE)
-- `其餘所有目錄` 使用 [Apache License 2.0](https://github.com/PCL-Community/PCL-CE/blob/dev/LICENSE)
+- `Plain Craft Launcher 2/` 使用 [自訂授權條款](https://github.com/Eleven3036/PCL-Eleven/blob/dev/Plain%20Craft%20Launcher%202/LICENCE)
+- `其餘所有目錄` 使用 [Apache License 2.0](https://github.com/Eleven3036/PCL-Eleven/blob/dev/LICENSE)
 
 ## 🌟 統計資料
 ![Alt](https://repobeats.axiom.co/api/embed/3e46296e6e3a134991a783480fd2f62723bb0353.svg "Repobeats analytics image")
 
-[![Star History Chart](https://api.star-history.com/svg?repos=PCL-Community/PCL-CE&type=Date)](https://www.star-history.com/#PCL-Community/PCL-CE&Date)
+[![Star History Chart](https://api.star-history.com/svg?repos=Eleven3036/PCL-Eleven&type=Date)](https://www.star-history.com/#Eleven3036/PCL-Eleven&Date)
 
-**此頁瀏覽量**（總計 / 今日）：[![Hits](https://hits.zkitefly.eu.org/?tag=https://github.com/PCL-Community/PCL-CE)](https://hits.zkitefly.eu.org/?tag=https://github.com/PCL-Community/PCL-CE&web=true)
+**此頁瀏覽量**（總計 / 今日）：[![Hits](https://hits.zkitefly.eu.org/?tag=https://github.com/Eleven3036/PCL-Eleven)](https://hits.zkitefly.eu.org/?tag=https://github.com/Eleven3036/PCL-Eleven&web=true)
 ## ❤️ 貢獻者
 
-[![](https://contrib.rocks/image?repo=PCL-Community/PCL-CE)](https://github.com/PCL-Community/PCL-CE/graphs/contributors)
+[![](https://contrib.rocks/image?repo=Eleven3036/PCL-Eleven)](https://github.com/Eleven3036/PCL-Eleven/graphs/contributors)

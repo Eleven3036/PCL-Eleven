@@ -1,5 +1,5 @@
 
-PCL-Eleven 是由 PCL-Community 开发的 PCL 社区衍生版本。
+PCL-Eleven 是由 Eleven 开发的 PCL 社区衍生版本。
 
 在 PCL 文件夹下创建 hints.txt ，可以自定义“你知道吗”的内容，注意编码需要为 UTF-8！
 
@@ -979,13 +979,13 @@ eruption 决斗室的外圈地面上用涂蜡的氧化切制铜块标记出发�
 
 村庄的原住民起初是猪人，而猪人后来的设计概念被沿用成为猪灵。
 
-PCL-Eleven 由 PCL-Community 基于 PCL 官方版开发，与龙腾猫跃没有隶属关系。
+PCL-Eleven 由 Eleven 基于 PCL 官方版开发，与龙腾猫跃没有隶属关系。
 
 PCL-Eleven 支持导入 HMCL 档案。
 
-PCL-Eleven 由 PCL-Community 开发，但 PCL-Community 不止开发了 PCL-Eleven。
+PCL-Eleven 由 Eleven 开发，但 Eleven 不止开发了 PCL-Eleven。
 
-PCL-Eleven 全称是 PCL-Eleven（Plain Craft Launcher 社区版）。
+PCL-Eleven 全称是 PCL-Eleven（Plain Craft Launcher PCL-Eleven）。
 
 你下载 Minecraft 这么快得多亏了 bangbang93 的 BMCLAPI！
 
@@ -995,7 +995,7 @@ PCL-Eleven 支持高斯模糊了。
 
 PCL-Eleven 可以设置动态背景。
 
-就官方版统计，有 94.5% 的用户点击了官方版的千万别点（别想了，这个社区版没有）。
+就官方版统计，有 94.5% 的用户点击了官方版的千万别点（别想了，这个PCL-Eleven没有）。
 
 PCL-Eleven 已实现官方 PCL 中的部分百宝箱功能，如今日人品、清理游戏垃圾、高速下载等，同时提供了更多社区独立开发的小工具。  
 
