@@ -28,13 +28,11 @@ PCL-Eleven 是基于 [PCL（Plain Craft Launcher）](https://github.com/Meloong-
 
 > PCL-Eleven 的版本号与上游主线并非严格对应，请不要向上游仓库反馈本分支的问题。
 
-> ⚠️ **责任声明**
+> 原PCL作者：龙腾猫跃，社区版团队：PCLCommunity，由不可逆原因停止mc本体下载
 >
-> - 原 PCL（Plain Craft Launcher）作者：**龙腾猫跃**
-> - PCL Community Edition 社区团队：**PCL-Community**（因不可逆原因停止了 Minecraft 本体下载功能）
-> - PCL-Eleven 二次开发作者：**Eleven**（恢复了 Minecraft 本体下载功能，作为独立品牌分支发布）
+> PCL-Eleven作者：Eleven二次开发创建PCL-Eleven恢复mc本体下载功能
 >
-> 如您在使用 PCL-Eleven 过程中遇到任何问题，请反馈给 [Eleven](https://github.com/Eleven3036/PCL-Eleven/issues)。**请不要向龙腾猫跃或 PCL-Community 反馈 PCL-Eleven 的问题。** 感谢配合。
+> 如该启动器有问题请反馈给Eleven，请不要反馈给龙腾猫跃以及PCL Community。感谢配合
 
 ---
 
