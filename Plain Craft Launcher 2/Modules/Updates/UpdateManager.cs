@@ -1,4 +1,4 @@
-﻿using System.ComponentModel;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using PCL.Core.App;
@@ -14,14 +14,13 @@ public static class UpdateManager
 
     public static UpdatesWrapperModel remoteServer = new(new List<IUpdateSource>
     {
+        new UpdatesGitHubModel("Eleven3036", "PCL-Eleven", "GitHub"),
         new UpdatesMirrorChyanModel(),
         new UpdatesRandomModel(new[]
         {
             new UpdatesMinioModel("https://s3.pysio.online/pcl2-ce/", "Pysio"),
             new UpdatesMinioModel("https://staticassets.naids.com/resources/pclce/", "Naids")
         })
-        // PCL-Eleven：GitHub 更新源暂时移除，待配置专属更新源
-        // new UpdatesMinioModel("https://github.com/PCL-Community/PCL2_CE_Server/raw/main/", "GitHub")
     });
 
     public static bool IsCurrentVersionBeta
@@ -36,17 +35,28 @@ public static class UpdateManager
     
     public static UpdateEnums.VersionStatus GetVersionStatus()
     {
-        // PCL-Eleven：版本检查已禁用，始终视为最新版本
-        return UpdateEnums.VersionStatus.Latest;
+        try
+        {
+            var latest = remoteServer.GetLatestVersion(
+                IsCurrentVersionBeta ? UpdateChannel.beta : UpdateChannel.stable,
+                SystemInfo.IsArm64System ? UpdateArch.arm64 : UpdateArch.x64);
+
+            ModBase.Log($"[Update] 远程最新版本: {latest.VersionName}, 当前版本: {ModBase.versionBaseName}");
+            if (SemVer.Parse(latest.VersionName) > SemVer.Parse(ModBase.versionBaseName))
+                return UpdateEnums.VersionStatus.NotLatest;
+            return UpdateEnums.VersionStatus.Latest;
+        }
+        catch (Exception ex)
+        {
+            ModBase.Log(ex, "[Update] 获取版本状态失败");
+            return UpdateEnums.VersionStatus.Unknown;
+        }
     }
     
     public static ModLoader.LoaderCombo<JsonObject> updateLoader;
 
     public static void UpdateStart(UpdateEnums.UpdateType type, string receivedKey = null, bool forceValidated = false)
     {
-        // PCL-Eleven：版本检查/更新已禁用，不执行任何下载安装行为
-        return;
-#pragma warning disable CS0162
         var dlTargetPath = ModBase.exePath + @"PCL\PCL-Eleven.exe";
         ModBase.RunInNewThread(() =>
         {
@@ -218,9 +228,6 @@ public static class UpdateManager
 
     private static void ScheduleBasedOnConfig()
     {
-        // PCL-Eleven：版本检查已禁用，不执行任何自动更新行为
-        return;
-#pragma warning disable CS0162
         switch (Config.Update.UpdateMode)
         {
             case LauncherAutoUpdateBehavior.DownloadAndInstall:

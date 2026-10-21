@@ -1,4 +1,4 @@
-﻿using System.ComponentModel;
+using System.ComponentModel;
 using System.IO;
 using System.Net;
 using System.Runtime.InteropServices;
@@ -1386,6 +1386,11 @@ public partial class FormMain
         Tools = 3,
 
         /// <summary>
+        ///     直播间。
+        /// </summary>
+        Livestream = 4,
+
+        /// <summary>
         ///     设置。
         /// </summary>
         Setup = 2,
@@ -1874,6 +1879,13 @@ public partial class FormMain
                         ModMain.frmToolsLeft ??= new PageToolsLeft();
                         subType = ModMain.frmToolsLeft.pageID;
                         PageChangeAnim(ModMain.frmToolsLeft, (FrameworkElement)ModMain.frmToolsLeft.PageGet(subType));
+                        break;
+                    }
+                case PageType.Livestream: // 直播间
+                    {
+                        ModMain.frmLivestreamLeft ??= new PageLivestreamLeft();
+                        ModMain.frmLivestreamRight ??= new PageLivestreamRight();
+                        PageChangeAnim(ModMain.frmLivestreamLeft, ModMain.frmLivestreamRight);
                         break;
                     }
                 case PageType.Setup: // 设置

@@ -1,4 +1,4 @@
-﻿using System.Windows;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using PCL.Core.App;
@@ -63,14 +63,6 @@ public partial class PageSetupUpdate
 
     public async void CheckUpdate()
     {
-        // PCL-Eleven：版本检查已禁用，更新页直接显示已是最新版本
-        ModBase.Log("[Update] 版本检查已禁用（PCL-Eleven）");
-        CardUpdate.Visibility = Visibility.Collapsed;
-        CardCheck.Visibility = Visibility.Visible;
-        BtnCheckAgain.IsEnabled = true;
-        TextCurrentDesc.Text = Lang.Text("Setup.Update.Latest");
-        return;
-#pragma warning disable CS0162
         ModBase.Log("[Update] 开始检查更新");
         CardUpdate.Visibility = Visibility.Collapsed;
         CardCheck.Visibility = Visibility.Visible;
