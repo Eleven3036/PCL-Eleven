@@ -2,18 +2,18 @@
 
 <div align="center">
 
-<img src="Plain%20Craft%20Launcher%202/Images/icon.png" alt="Logo" width="80" height="80">
+<img src="icon.png" alt="Logo" width="80" height="80">
 
 # PCL-Eleven
 
-[![Stars](https://img.shields.io/github/stars/Eleven3036/PCL-Eleven?style=for-the-badge\&logo=data:image/svg%2bxml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZlcnNpb249IjEiIHdpZHRoPSIxNiIgaGVpZ2h0PSIxNiI+PHBhdGggZD0iTTggLjI1YS43NS43NSAwIDAgMSAuNjczLjQxOGwxLjg4MiAzLjgxNSA0LjIxLjYxMmEuNzUuNzUgMCAwIDEgLjQxNiAxLjI3OWwtMy4wNDYgMi45Ny43MTkgNC4xOTJhLjc1MS43NTEgMCAwIDEtMS4wODguNzkxTDggMTIuMzQ3bC0zLjc2NiAxLjk4YS43NS43NSAwIDAgMS0xLjA4OC0uNzlsLjcyLTQuMTk0TC44MTggNi4zNzRhLjc1Ljc1IDAgMCAxIC40MTYtMS4yOGw0LjIxLS42MTFMNy4zMjcuNjY4QS43NS43NSAwIDAgMSA4IC4yNVoiIGZpbGw9IiNlYWM1NGYiLz48L3N2Zz4=\&logoSize=auto\&label=stars\&labelColor=444444\&color=eac54f)](https://github.com/Eleven3036/PCL-Eleven/)
-![GitHub Release](https://img.shields.io/github/v/release/Eleven3036/PCL-Eleven?label=release\&logo=github\&style=for-the-badge)
+[![Stars](https://img.shields.io/github/stars/Eleven3036/PCL-Eleven?style=for-the-badge&label=stars&labelColor=444444&color=eac54f)](https://github.com/Eleven3036/PCL-Eleven/)
+![GitHub Release](https://img.shields.io/github/v/release/Eleven3036/PCL-Eleven?label=release&logo=github&style=for-the-badge)
 ![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/Eleven3036/PCL-Eleven/build-test.yml?style=for-the-badge)
 
-[![Issues](https://img.shields.io/github/issues/Eleven3036/PCL-Eleven?style=for-the-badge\&label=issues\&labelColor=444444\&color=1F883D\&logo=github)](https://github.com/Eleven3036/PCL-Eleven/issues)
-[![Pull requests](https://img.shields.io/github/issues-pr/Eleven3036/PCL-Eleven?style=for-the-badge\&label=pull%20requests\&labelColor=444444\&color=1F883D\&logo=github)](https://github.com/Eleven3036/PCL-Eleven/pulls)
+[![Issues](https://img.shields.io/github/issues/Eleven3036/PCL-Eleven?style=for-the-badge&label=issues&labelColor=444444&color=1F883D&logo=github)](https://github.com/Eleven3036/PCL-Eleven/issues)
+[![Pull requests](https://img.shields.io/github/issues-pr/Eleven3036/PCL-Eleven?style=for-the-badge&label=pull%20requests&labelColor=444444&color=1F883D&logo=github)](https://github.com/Eleven3036/PCL-Eleven/pulls)
 ![GitHub Downloads (all assets, all releases)](https://img.shields.io/github/downloads/Eleven3036/PCL-Eleven/total?style=for-the-badge)
-[![License](https://img.shields.io/badge/license-GPL--3.0-green?style=for-the-badge\&labelColor=444444)](LICENSE)
+[![License](https://img.shields.io/badge/license-GPL--3.0-green?style=for-the-badge&labelColor=444444)](LICENSE)
 
 [下载](https://github.com/Eleven3036/PCL-Eleven/releases/latest) |
 [官网](https://pcl-eleven.furina3036.online/)
@@ -68,7 +68,7 @@ PCL-Eleven/
 
 ## 开发注意事项
 
-- 所有 API 密钥（MS\_CLIENT\_ID、CURSEFORGE\_API\_KEY 等）**不会**硬编码在源码里，请通过环境变量或 GitHub Actions Secrets 配置
+- 所有 API 密钥（MS_CLIENT_ID、CURSEFORGE_API_KEY 等）**不会**硬编码在源码里，请通过环境变量或 GitHub Actions Secrets 配置
 - `Secrets.cs` 里所有密钥均为 `.ReplaceNullOrEmpty()`（无默认值），未配置时为空字符串
 
 ## License
