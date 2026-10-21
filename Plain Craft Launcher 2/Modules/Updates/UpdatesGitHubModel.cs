@@ -38,7 +38,11 @@ public class UpdatesGitHubModel : IUpdateSource
             var url = $"https://api.github.com/repos/{_owner}/{_repo}/releases/latest";
             using var client = new HttpClient();
             client.DefaultRequestHeaders.Add("User-Agent", "PCL-Eleven-Launcher");
-            var json = client.GetStringAsync(url).GetAwaiter().GetResult();
+            // 关键：ConfigureAwait(false) 防止在 UI 线程上调用 .GetResult() 造成死锁。
+            // 这个方法会从 PageSetupUpdate.CheckUpdate (UI 线程 await) 链路调用，
+            // 若没有 ConfigureAwait(false)，async 调用完成后会尝试回到 UI 线程，
+            // 但 UI 线程此时正卡在 .GetResult() 上 —— 经典死锁。
+            var json = client.GetStringAsync(url).ConfigureAwait(false).GetAwaiter().GetResult();
             _latestRelease = JsonSerializer.Deserialize<GitHubReleaseModel>(json, JsonCompat.SerializerOptions);
             return _latestRelease is not null;
         }

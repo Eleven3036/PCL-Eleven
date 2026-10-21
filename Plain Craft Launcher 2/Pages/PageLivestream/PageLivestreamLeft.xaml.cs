@@ -1,3 +1,4 @@
+using System;
 using System.Windows;
 using System.Windows.Controls;
 
@@ -30,9 +31,9 @@ public partial class PageLivestreamLeft : MyPageLeft
     }
 
     /// <summary>
-    /// 刷新按钮：通知右栏重新从 API 拉取
+    /// 刷新按钮：通知右栏重新从 API 拉取（MyIconButton.Click 签名）
     /// </summary>
-    private void BtnRefresh_Click(object sender, RoutedEventArgs e)
+    private void BtnRefresh_Click(object sender, EventArgs e)
     {
         ModMain.frmLivestreamRight?.ReloadFromApi();
     }

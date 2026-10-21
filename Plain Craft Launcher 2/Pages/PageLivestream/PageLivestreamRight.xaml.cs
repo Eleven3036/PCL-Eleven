@@ -1,3 +1,4 @@
+using System;
 using System.Collections.ObjectModel;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -166,14 +167,16 @@ public partial class PageLivestreamRight : MyPageRight
     private static void ShowCard(FrameworkElement card) => card.Visibility = Visibility.Visible;
     private static void HideCard(FrameworkElement card) => card.Visibility = Visibility.Collapsed;
 
-    // ============== 按钮事件 ==============
+    // ============== 按钮事件（注意：自定义控件的 Click 签名和 WPF RoutedEventArgs 不一样） ==============
 
-    private void BtnReload_Click(object sender, RoutedEventArgs e)
+    // MyIconButton.Click 签名: (object sender, EventArgs e)
+    private void BtnReload_Click(object sender, EventArgs e)
     {
         _ = ReloadFromApiAsync();
     }
 
-    private void BtnWatch_Click(object sender, RoutedEventArgs e)
+    // MyIconTextButton.Click 签名: (object sender, ModBase.RouteEventArgs e)
+    private void BtnWatch_Click(object sender, ModBase.RouteEventArgs e)
     {
         // 从 VisualTree 往上找 DataContext 是 RoomItem 的元素
         var dep = sender as DependencyObject;
@@ -236,14 +239,16 @@ public partial class PageLivestreamRight : MyPageRight
         _webView2Initialized = true;
     }
 
-    private void BtnPlayerBack_Click(object sender, RoutedEventArgs e)
+    // MyIconButton.Click 签名: (object sender, EventArgs e)
+    private void BtnPlayerBack_Click(object sender, EventArgs e)
     {
         StopPlayer();
         PanPlayer.Visibility = Visibility.Collapsed;
         PanList.Visibility = Visibility.Visible;
     }
 
-    private void BtnPlayerOpenExternal_Click(object sender, RoutedEventArgs e)
+    // MyIconButton.Click 签名: (object sender, EventArgs e)
+    private void BtnPlayerOpenExternal_Click(object sender, EventArgs e)
     {
         if (_currentPlayingRoom is { LiveUrl: var url } && !string.IsNullOrEmpty(url))
         {
