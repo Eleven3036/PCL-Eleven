@@ -236,32 +236,18 @@ public static class UpdateManager
 
     private static void LoadOnlineInfo()
     {
-        ScheduleBasedOnConfig();
+        // PCL-Eleven 禁用启动时自动更新检查（serverLoader 仅保留公告加载）。
+        // 原因：自动更新会调 GitHub API，在某些网络环境下 15s 超时才返回，
+        // 导致用户手动点「检查更新」时后台已有同类请求在跑，体验像卡死。
+        // 改为用户手动触发时才调用更新检查。
         AnnouncementService.Load();
     }
 
     private static void ScheduleBasedOnConfig()
     {
-        switch (Config.Update.UpdateMode)
-        {
-            case LauncherAutoUpdateBehavior.DownloadAndInstall:
-                ModBase.Log("[Update] 更新设置: 自动下载并安装更新");
-                if (GetVersionStatus() != UpdateEnums.VersionStatus.Latest)
-                    UpdateStart(UpdateEnums.UpdateType.Silent);
-                break;
-            case LauncherAutoUpdateBehavior.DownloadAndAnnounce:
-                ModBase.Log("[Update] 更新设置: 自动下载并提示更新");
-                UpdateStart(UpdateEnums.UpdateType.DownloadAndPrompt);
-                break;
-            case LauncherAutoUpdateBehavior.AnnounceOnly:
-                ModBase.Log("[Update] 更新设置: 提示更新");
-                UpdateStart(UpdateEnums.UpdateType.PromptOnly);
-                break;
-            default:
-                ModBase.Log("[Update] 更新设置: 不自动检查更新");
-                return;
-        }
-#pragma warning restore CS0162
+        // PCL-Eleven：启动时不自动检查更新。
+        // 自动更新留给用户在设置页手动点击触发。
+        ModBase.Log("[Update] PCL-Eleven 禁用启动时自动检查更新");
     }
 
     /// <summary>

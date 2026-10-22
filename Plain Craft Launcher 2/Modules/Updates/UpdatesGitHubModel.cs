@@ -35,19 +35,26 @@ public class UpdatesGitHubModel : IUpdateSource
     {
         try
         {
+            ModBase.Log("[Update] GitHub RefreshCache 开始请求 releases/latest");
             var url = $"https://api.github.com/repos/{_owner}/{_repo}/releases/latest";
             using var client = new HttpClient
             {
-                Timeout = TimeSpan.FromSeconds(15)  // 15s 超时，防止 GitHub API 卡住阻塞主线程
+                Timeout = TimeSpan.FromSeconds(5)  // 5s 超时，给用户快速反馈"检查失败"而非长时间等待
             };
             client.DefaultRequestHeaders.Add("User-Agent", "PCL-Eleven-Launcher");
-            // 关键：ConfigureAwait(false) 防止在 UI 线程上调用 .GetResult() 造成死锁。
-            // 这个方法会从 PageSetupUpdate.CheckUpdate (UI 线程 await) 链路调用，
-            // 若没有 ConfigureAwait(false)，async 调用完成后会尝试回到 UI 线程，
-            // 但 UI 线程此时正卡在 .GetResult() 上 —— 经典死锁。
+            // ConfigureAwait(false) 防止同步阻塞在 UI 线程上造成死锁
+            var sw = System.Diagnostics.Stopwatch.StartNew();
             var json = client.GetStringAsync(url).ConfigureAwait(false).GetAwaiter().GetResult();
+            sw.Stop();
+            ModBase.Log($"[Update] GitHub API 请求成功，耗时 {sw.ElapsedMilliseconds}ms");
             _latestRelease = JsonSerializer.Deserialize<GitHubReleaseModel>(json, JsonCompat.SerializerOptions);
+            ModBase.Log($"[Update] GitHub tag={_latestRelease?.TagName}, assets={_latestRelease?.Assets?.Count ?? 0}");
             return _latestRelease is not null;
+        }
+        catch (TaskCanceledException)
+        {
+            ModBase.Log("[Update] GitHub API 请求超时 (5s)");
+            return false;
         }
         catch (Exception ex)
         {

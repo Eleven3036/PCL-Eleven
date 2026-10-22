@@ -63,25 +63,28 @@ public partial class PageSetupUpdate
 
     public async void CheckUpdate()
     {
-        ModBase.Log("[Update] 开始检查更新");
+        ModBase.Log("[Update] === CheckUpdate 开始 ===");
         CardUpdate.Visibility = Visibility.Collapsed;
         CardCheck.Visibility = Visibility.Visible;
         TextCurrentDesc.Text = Lang.Text("Setup.Update.Checking");
         BtnCheckAgain.IsEnabled = false;
+        ModBase.Log("[Update] Step 1: IsLatestAsync()");
         switch (await IsLatestAsync())
         {
             case UpdateStatus.Available:
             {
+                ModBase.Log("[Update] Step 1 完成: 有新版本可用");
                 Exception checkUpdateEx = null;
                 try
                 {
+                    ModBase.Log("[Update] Step 2: GetLatestVersion() via Task.Run");
                     // 关键：GetLatestVersion 内部会在 _latestRelease 为 null 时调 RefreshCache()
-                    // → .GetResult() 同步阻塞。如果放在 UI 线程上，就是经典死锁。
-                    // 这里必须用 Task.Run 包到后台线程执行！
-                    updateInfo = await Task.Run(() => UpdateManager.remoteServer.GetLatestVersion(
+                    // → .GetResult() 同步阻塞。UI 线程上必须包 Task.Run！
+                    updateInfo = await System.Threading.Tasks.Task.Run(() => UpdateManager.remoteServer.GetLatestVersion(
                         UpdateManager.IsCurrentVersionBeta
                             ? UpdateChannel.beta
                             : UpdateChannel.stable, SystemInfo.IsArm64System ? UpdateArch.arm64 : UpdateArch.x64));
+                    ModBase.Log("[Update] Step 2 完成: version=" + updateInfo.VersionName);
                     TextUpdateName.Text = "PCL-Eleven " + VersionNameFormat(updateInfo.VersionName);
                     var summary = updateInfo.Changelog.Between("<summary>", "</summary>");
                     if (!updateInfo.Changelog.Contains("<summary>") || string.IsNullOrWhiteSpace(summary.Trim()))
@@ -91,6 +94,7 @@ public partial class PageSetupUpdate
                 }
                 catch (Exception ex)
                 {
+                    ModBase.Log(ex, "[Update] Step 2 失败");
                     checkUpdateEx = ex;
                 }
 
