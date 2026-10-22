@@ -94,8 +94,16 @@ public static class UpdateManager
                     SystemInfo.IsArm64System ? UpdateArch.arm64 : UpdateArch.x64, dlTargetPath));
                 loaders.Add(new ModLoader.LoaderTask<int, int>(Lang.Text("Update.Task.Check"), _ =>
                 {
+                    // PCL-Eleven 修复：GitHub Release API 本身不返回资产的 SHA256，
+                    // UpdatesGitHubModel.GetLatestVersion() 里硬编码 Sha256 = ""。
+                    // 如果 version.Sha256 为空，说明该更新源不支持 SHA256 校验，直接跳过即可。
+                    if (string.IsNullOrEmpty(version.Sha256))
+                    {
+                        ModBase.Log("[Update] 更新源未提供 SHA256，跳过校验");
+                        return;
+                    }
                     var curHash = ModBase.GetFileSHA256(dlTargetPath);
-                    if ((curHash ?? "") != (version.Sha256 ?? ""))
+                    if ((curHash ?? "") != version.Sha256)
                         throw new Exception(Lang.Text("Update.Error.Sha256Mismatch", version.Sha256, curHash));
                 }));
                 if (type == UpdateEnums.UpdateType.UpdateNow)
@@ -196,16 +204,21 @@ public static class UpdateManager
             SystemInfo.IsArm64System ? UpdateArch.arm64 : UpdateArch.x64);
         if (target is null)
             throw new Exception(Lang.Text("Update.Error.UnableToGetUpdate"));
-        if (File.Exists(latestPCLPath) && (ModBase.GetFileSHA256(latestPCLPath) ?? "") == (target.Sha256 ?? ""))
+        // PCL-Eleven：GitHub 源不提供 SHA256，空值时跳过 Hash 比较直接下载
+        if (!string.IsNullOrEmpty(target.Sha256))
         {
-            ModBase.Log("[System] 最新版 PCL 已存在，跳过下载");
-            return;
-        }
+            if (File.Exists(latestPCLPath) &&
+                (ModBase.GetFileSHA256(latestPCLPath) ?? "") == target.Sha256)
+            {
+                ModBase.Log("[System] 最新版 PCL 已存在，跳过下载");
+                return;
+            }
 
-        if ((ModBase.GetFileSHA256(Basics.ExecutablePath) ?? "") == (target.Sha256 ?? "")) // 正在使用的版本符合要求，直接拿来用
-        {
-            ModBase.CopyFile(Basics.ExecutablePath, latestPCLPath);
-            return;
+            if ((ModBase.GetFileSHA256(Basics.ExecutablePath) ?? "") == target.Sha256)
+            {
+                ModBase.CopyFile(Basics.ExecutablePath, latestPCLPath);
+                return;
+            }
         }
 
         var loaders = remoteServer.GetDownloadLoader(UpdateChannel.stable,
