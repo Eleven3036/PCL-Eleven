@@ -1,10 +1,10 @@
 {
   "name": "PCL-Eleven",
   "version": {
-    "base": "11.3.5",
+    "base": "11.3.6",
     "upstream": "2.12.1",
     "suffix": "",
-    "code": 1135
+    "code": 1136
   },
   "licenses": [
     {

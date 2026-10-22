@@ -73,31 +73,18 @@
                                 RadiusY="17" />
                         </Image.Clip>
                     </Image>
-                    <StackPanel
+                    <local:MyButton
                         Grid.Row="3"
                         Grid.Column="2"
-                        Orientation="Horizontal">
-                        <local:MyButton
-                            Width="72"
-                            Margin="0,0,5,0"
-                            Height="35"
-                            Padding="8,0"
-                            Text="官网"
-                            local:CustomEventService.EventData="https://pcl-eleven.furina3036.online/"
-                            local:CustomEventService.EventType="OpenUrl" />
-                        <local:MyButton
-                            Width="72"
-                            Height="35"
-                            Padding="8,0"
-                            Text="主页"
-                            local:CustomEventService.EventData="https://grzy.furina3036.online/"
-                            local:CustomEventService.EventType="OpenUrl" />
-                    </StackPanel>
+                        Height="35"
+                        local:CustomEventService.EventData="https://grzy.furina3036.online/"
+                        local:CustomEventService.EventType="OpenUrl"
+                        Text="作者主页" />
                     <Image
                         x:Name="ImgPCLLogo"
                         Grid.Row="2"
                         Margin="3" MouseLeftButtonDown="ImgPCLLogo_Click"
-                        Source="/PCL-Eleven;component/Images/Heads/Logo.png">
+                        Source="/PCL-Eleven;component/Images/Heads/PCL-Eleven.png">
                         <Image.Clip>
                             <EllipseGeometry
                                 Center="17 17"
@@ -105,6 +92,13 @@
                                 RadiusY="17" />
                         </Image.Clip>
                     </Image>
+                    <local:MyButton
+                        Grid.Row="2"
+                        Grid.Column="2"
+                        Height="35"
+                        local:CustomEventService.EventData="https://pcl-eleven.furina3036.online/"
+                        local:CustomEventService.EventType="OpenUrl"
+                        Text="PCL-Eleven 官网" />
                     <Image
                         Grid.Row="0"
                         Margin="3"
