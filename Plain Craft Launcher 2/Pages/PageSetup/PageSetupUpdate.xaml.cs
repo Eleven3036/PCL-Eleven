@@ -259,8 +259,7 @@ public partial class PageSetupUpdate
 
     private void BtnChangelog_Click(object sender, MouseButtonEventArgs e)
     {
-        // PCL-Eleven：更新日志地址暂时为空，待配置专属链接
-        // ModBase.OpenWebsite("https://github.com/PCL-Community/PCL2-CE/releases/v" + ModBase.versionBaseName);
+        ModBase.OpenWebsite("https://pcl-eleven.furina3036.online/changelog.html");
     }
 
     public string VersionNameFormat(string str)
