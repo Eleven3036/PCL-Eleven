@@ -44,6 +44,9 @@ public partial class PageLaunchRight : IRefreshable
                         "     功能，作为独立项目发布）";
         LabHint2.Text = "如您在使用 PCL-Eleven 过程中遇到任何问题，请反馈给 Eleven：\n" +
                         "请不要向龙腾猫跃或 PCL-Community 反馈 PCL-Eleven 的问题。感谢配合。";
+        LabCardFree.Text = "正版玩家直接跟微软打交道，不接受这个限制，\n" +
+                           "启动器只是个工具，不提供任何网络服务。\n" +
+                           "对正版玩家禁用下载，实际上是损害他的合法权利。";
         _EnsureHomepageLiveWatcher();
     }
 

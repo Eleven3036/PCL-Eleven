@@ -11,6 +11,9 @@
                     <TextBlock x:Name="LabHint2" TextWrapping="Wrap" Margin="0,0,0,2" FontSize="13.5" />
                 </StackPanel>
             </local:MyCard>
+            <local:MyCard Margin="0,0,0,15" Title="关于正版玩家" x:Name="PanCardFree">
+                <TextBlock x:Name="LabCardFree" Margin="25,38,23,15" TextWrapping="Wrap" FontSize="13.5" />
+            </local:MyCard>
             <local:MyCard Margin="0,0,0,15" Title="{DynamicResource Launch.Right.Log.Title}" x:Name="PanLog">
                 <TextBlock x:Name="LabLog" Margin="20,38,20,18" TextTrimming="None" TextWrapping="Wrap" />
             </local:MyCard>
