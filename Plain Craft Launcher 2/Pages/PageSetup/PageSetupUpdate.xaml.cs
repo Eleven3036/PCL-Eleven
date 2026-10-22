@@ -28,7 +28,8 @@ public partial class PageSetupUpdate
 
         TextCurrentVersion.Text = "PCL-Eleven " + VersionNameFormat(ModBase.versionBaseName);
         ModAnimation.AniControlEnabled -= 1;
-        CheckUpdate();
+        // PCL-Eleven：页面加载时不自动检查更新，
+        // 留给用户手动点"检查更新"按钮触发，避免 GitHub API 阻塞 UI。
     }
 
     private async Task<UpdateStatus> IsLatestAsync()

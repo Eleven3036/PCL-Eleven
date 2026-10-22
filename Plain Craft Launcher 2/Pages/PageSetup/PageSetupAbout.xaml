@@ -77,7 +77,7 @@
                         Grid.Row="3"
                         Grid.Column="2"
                         Height="35"
-                        local:CustomEventService.EventData="https://grzy.furina3036.online/"
+                        local:CustomEventService.EventData="https://space.bilibili.com/3546614106949704"
                         local:CustomEventService.EventType="OpenUrl"
                         Text="作者主页" />
                     <Image
