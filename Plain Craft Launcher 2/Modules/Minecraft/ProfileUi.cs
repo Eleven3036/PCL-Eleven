@@ -181,7 +181,7 @@ public static class ProfileUi
 
     public static bool CanCreateOtherProfile()
     {
-        // PCL-Eleven：始终允许创建正版/第三方/离线档案
+        // PCL-Eleven：允许创建第三方档案，但禁用离线验证
         return true;
     }
 
@@ -196,11 +196,12 @@ public static class ProfileUi
         });
         if (selected is null) return;
         ProfileService.IsCreatingProfile = true;
+        // PCL-Eleven：已禁用离线验证，仅正版(0) 和 第三方(1)
         var type = selected.Value switch
         {
             0 => ModLaunch.McLoginType.Ms,
             1 => ModLaunch.McLoginType.Auth,
-            _ => ModLaunch.McLoginType.Legacy
+            _ => ModLaunch.McLoginType.Ms  // 兜底走正版（离线已不可选）
         };
         if (type == ModLaunch.McLoginType.Auth)
         {
@@ -222,8 +223,8 @@ public static class ProfileUi
     private static List<IMyRadio> _GetAvailableProfileSelection(bool includeOthers) => includeOthers
         ? [
             new MyListItem { Title = Lang.Text("Launch.Account.Type.Microsoft"), Type = MyListItem.CheckType.RadioBox, SvgIcon = "lucide/shield-check" },
-            new MyListItem { Title = Lang.Text("Launch.Account.Type.ThirdParty"), Type = MyListItem.CheckType.RadioBox, SvgIcon = "lucide/network" },
-            new MyListItem { Title = Lang.Text("Launch.Account.Type.Offline"), Type = MyListItem.CheckType.RadioBox, SvgIcon = "lucide/link-2-off" }
+            new MyListItem { Title = Lang.Text("Launch.Account.Type.ThirdParty"), Type = MyListItem.CheckType.RadioBox, SvgIcon = "lucide/network" }
+            // PCL-Eleven：已禁用离线验证，移除该选项
         ]
         : [new MyListItem { Title = Lang.Text("Launch.Account.Type.Microsoft"), Type = MyListItem.CheckType.RadioBox, SvgIcon = "lucide/shield-check" }];
 
