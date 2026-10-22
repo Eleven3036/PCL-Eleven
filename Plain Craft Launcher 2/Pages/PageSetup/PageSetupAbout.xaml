@@ -62,10 +62,42 @@
                         IsHitTestVisible="False"
                         Title="{DynamicResource Setup.About.Eleven.Name}" />
                     <Image
+                        x:Name="ImgEleven"
+                        Grid.Row="3"
+                        Margin="3"
+                        Source="/PCL-Eleven;component/Images/Heads/Eleven.png">
+                        <Image.Clip>
+                            <EllipseGeometry
+                                Center="17 17"
+                                RadiusX="17"
+                                RadiusY="17" />
+                        </Image.Clip>
+                    </Image>
+                    <StackPanel
+                        Grid.Row="3"
+                        Grid.Column="2"
+                        Orientation="Horizontal">
+                        <local:MyButton
+                            Width="72"
+                            Margin="0,0,5,0"
+                            Height="35"
+                            Padding="8,0"
+                            Text="官网"
+                            local:CustomEventService.EventData="https://pcl-eleven.furina3036.online/"
+                            local:CustomEventService.EventType="OpenUrl" />
+                        <local:MyButton
+                            Width="72"
+                            Height="35"
+                            Padding="8,0"
+                            Text="主页"
+                            local:CustomEventService.EventData="https://grzy.furina3036.online/"
+                            local:CustomEventService.EventType="OpenUrl" />
+                    </StackPanel>
+                    <Image
                         x:Name="ImgPCLLogo"
                         Grid.Row="2"
                         Margin="3" MouseLeftButtonDown="ImgPCLLogo_Click"
-                        Source="/PCL-Eleven;component/Images/Heads/Logo-CE.png">
+                        Source="/PCL-Eleven;component/Images/Heads/Logo.png">
                         <Image.Clip>
                             <EllipseGeometry
                                 Center="17 17"
