@@ -12,15 +12,12 @@ public static class UpdateManager
 {
     public static bool isUpdateWaitingRestart;
 
+    // PCL-Eleven 只使用 GitHub Releases 更新源，原社区版的 MirrorChyan / Minio 镜像
+    // 均已移除 —— 它们的 Sync-over-async 调用（.GetAwaiter().GetResult() 无 ConfigureAwait）
+    // 在不可达时会阻塞 UI 线程导致卡死，且 PCL-Eleven 实际上从未使用过这些源。
     public static UpdatesWrapperModel remoteServer = new(new List<IUpdateSource>
     {
-        new UpdatesGitHubModel("Eleven3036", "PCL-Eleven", "GitHub"),
-        new UpdatesMirrorChyanModel(),
-        new UpdatesRandomModel(new[]
-        {
-            new UpdatesMinioModel("https://s3.pysio.online/pcl2-ce/", "Pysio"),
-            new UpdatesMinioModel("https://staticassets.naids.com/resources/pclce/", "Naids")
-        })
+        new UpdatesGitHubModel("Eleven3036", "PCL-Eleven", "GitHub")
     });
 
     public static bool IsCurrentVersionBeta
@@ -37,9 +34,13 @@ public static class UpdateManager
     {
         try
         {
-            var latest = remoteServer.GetLatestVersion(
+            // 关键：remoteServer.GetLatestVersion() 内部会调 RefreshCache()，
+            // 后者用 .GetAwaiter().GetResult() 同步阻塞网络 IO。
+            // 如果不包 Task.Run，任何在 UI 线程上调用此方法的地方（如 ModBase.CanFeedback）
+            // 都会触发经典死锁。PCL-Eleven 修复：强制放后台线程执行。
+            var latest = System.Threading.Tasks.Task.Run(() => remoteServer.GetLatestVersion(
                 IsCurrentVersionBeta ? UpdateChannel.beta : UpdateChannel.stable,
-                SystemInfo.IsArm64System ? UpdateArch.arm64 : UpdateArch.x64);
+                SystemInfo.IsArm64System ? UpdateArch.arm64 : UpdateArch.x64)).GetAwaiter().GetResult();
 
             ModBase.Log($"[Update] 远程最新版本: {latest.VersionName}, 当前版本: {ModBase.versionBaseName}");
             if (SemVer.Parse(latest.VersionName) > SemVer.Parse(ModBase.versionBaseName))
