@@ -563,6 +563,8 @@
     <sys:String x:Key="Download.Comp.Filter.Loader.VanillaAvailable">原版可用</sys:String>
     <sys:String x:Key="Download.Comp.Filter.Loader.VanillaAvailable.ToolTip">作为资源包加载，可以直接在原版游戏里使用。</sys:String>
     <sys:String x:Key="Download.Comp.Filter.Reset">重置条件</sys:String>
+    <sys:String x:Key="Download.Comp.Filter.HideDownloaded">隐藏已下载</sys:String>
+    <sys:String x:Key="Download.Comp.Filter.HideDownloaded.ToolTip">隐藏已在当前管理实例中安装的同类资源</sys:String>
     <sys:String x:Key="Download.Comp.Filter.Sort">排序方式</sys:String>
     <sys:String x:Key="Download.Comp.Filter.Source">来源</sys:String>
     <sys:String x:Key="Download.Comp.Filter.Tag">标签</sys:String>

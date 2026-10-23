@@ -563,6 +563,8 @@
     <sys:String x:Key="Download.Comp.Filter.Loader.VanillaAvailable">Vanilla</sys:String>
     <sys:String x:Key="Download.Comp.Filter.Loader.VanillaAvailable.ToolTip">It can be loaded as a resource pack and used directly in the vanilla game.</sys:String>
     <sys:String x:Key="Download.Comp.Filter.Reset">Reset filters</sys:String>
+    <sys:String x:Key="Download.Comp.Filter.HideDownloaded">Hide installed</sys:String>
+    <sys:String x:Key="Download.Comp.Filter.HideDownloaded.ToolTip">Hide resources already installed in your managed instances</sys:String>
     <sys:String x:Key="Download.Comp.Filter.Sort">Sorting</sys:String>
     <sys:String x:Key="Download.Comp.Filter.Source">Source</sys:String>
     <sys:String x:Key="Download.Comp.Filter.Tag">Tags</sys:String>
