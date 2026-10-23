@@ -138,7 +138,7 @@ public partial class NetworkService
     private static SocketsHttpHandler _GetSocketsHttpHandler()
     {
         var hasProxy = HttpProxyManager.Instance is not null;
-        return new SocketsHttpHandler
+        var handler = new SocketsHttpHandler
         {
             UseProxy = true,
             AutomaticDecompression = DecompressionMethods.All,
@@ -150,8 +150,19 @@ public partial class NetworkService
             // 有代理时禁用 DoH ConnectCallback —— ConnectCallback 会完全跳过代理层导致直连超时
             ConnectCallback = !hasProxy && Config.Network.EnableDoH
                 ? HostConnectionHandler.Instance.GetConnectionAsync
-                : null
+                : null,
         };
+
+        // 有代理时放行证书错误 —— Clash/V2Ray 等 HTTPS MITM 代理用自签证书会被 Windows schannel 拒绝
+        if (hasProxy)
+        {
+            // .NET 10+ SocketsHttpHandler 移除了 ServerCertificateCustomValidationCallback，
+            // 需要通过全局 ServicePointManager 回调放行
+            ServicePointManager.ServerCertificateValidationCallback = (sender, cert, chain, errors) => true;
+            ServicePointManager.CheckCertificateRevocationList = false;
+        }
+
+        return handler;
     }
 
     /// <summary>
