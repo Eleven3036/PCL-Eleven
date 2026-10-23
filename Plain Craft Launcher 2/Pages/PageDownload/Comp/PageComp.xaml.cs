@@ -35,13 +35,13 @@ public partial class PageComp
 
             // 隐藏已下载过滤
             var visibleResults = storage.results;
-            if (CheckHideDownloaded.Checked == true && PageType == ModComp.CompType.Mod)
+            if (CheckHideDownloaded.Checked == true && PageType == ModComp.CompType.Mod && targetVersion is not null)
             {
-                var localSlugs = _GetLocalInstalledSlugs();
+                var localModIds = _GetLocalInstalledSlugs();
                 visibleResults = storage.results
-                    .Where(r => !localSlugs.Contains(r.Slug, StringComparer.OrdinalIgnoreCase))
+                    .Where(r => !_IsLocalInstalled(r, localModIds))
                     .ToList();
-                ModBase.Log($"[Comp] 隐藏已下载：本地已安装 {localSlugs.Count} 个，剩余 {visibleResults.Count} 个可显示");
+                ModBase.Log($"[Comp] 隐藏已下载：目标实例={targetVersion.Name}，本地已安装 {localModIds.Count} 个，剩余 {visibleResults.Count} 个可显示");
             }
 
             // 列表项
@@ -265,6 +265,8 @@ public partial class PageComp
         {
             // 设置目标
             ResetFilter(); // 重置筛选器
+            // 切换目标实例时清缓存，确保隐藏已下载功能重新扫描
+            _cachedLocalSlugs = null;
             TextSearchVersion.Text = targetVersion.Info.VanillaName;
 
             MyComboBoxItem GetTargetItemByName(string name)
@@ -408,7 +410,8 @@ public partial class PageComp
     }
 
     /// <summary>
-    ///     扫描所有已管理实例的 mods 文件夹，收集本地已安装模组的 Slug。
+    ///     扫描 PageComp.targetVersion（当前选中的目标实例）的 mods 文件夹，
+    ///     收集已安装模组的 modId（小写形式，用于匹配 CurseForge/Modrinth Slug）。
     ///     结果缓存 30 秒，避免频繁扫 jar。
     /// </summary>
     private static HashSet<string> _GetLocalInstalledSlugs()
@@ -417,73 +420,73 @@ public partial class PageComp
         if (_cachedLocalSlugs is not null && (DateTime.Now - _lastCacheTime).TotalSeconds < SlugCacheTTLSeconds)
             return _cachedLocalSlugs;
 
-        var slugs = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        var modIds = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
         try
         {
-            var allInstances = ModInstanceList.mcInstanceList.Values.SelectMany(l => l).Where(v => v is not null);
-            foreach (var instance in allInstances)
+            // 只扫当前选中的目标实例
+            if (targetVersion is null)
+                return modIds;
+
+            var modsFolder = Path.Combine(targetVersion.PathInstance, "mods");
+            if (!Directory.Exists(modsFolder))
+                return modIds;
+
+            foreach (var jarPath in Directory.EnumerateFiles(modsFolder, "*.jar", SearchOption.AllDirectories))
             {
-                var modsFolder = Path.Combine(instance.PathInstance, "mods");
-                if (!Directory.Exists(modsFolder)) continue;
-
-                foreach (var jarPath in Directory.EnumerateFiles(modsFolder, "*.jar", SearchOption.AllDirectories))
+                try
                 {
-                    try
+                    using var jar = ZipFile.OpenRead(jarPath);
+                    // mods.toml (Forge/NeoForge) — 有 [[mods]] 段，含 modId = "xxx"
+                    var tomlEntry = jar.GetEntry("META-INF/mods.toml");
+                    if (tomlEntry is not null)
                     {
-                        using var jar = ZipFile.OpenRead(jarPath);
-                        // mods.toml (Forge/NeoForge) — 有 [[mods]] 段，含 modId = "xxx"
-                        var tomlEntry = jar.GetEntry("META-INF/mods.toml");
-                        if (tomlEntry is not null)
-                        {
-                            using var stream = tomlEntry.Open();
-                            using var reader = new StreamReader(stream);
-                            var content = reader.ReadToEnd();
-                            // 提取 modId = "xxx" 或 modId='xxx'
-                            foreach (System.Text.RegularExpressions.Match match in System.Text.RegularExpressions.Regex.Matches(content, @"modId\s*=\s*[""']([^""']+)[""']"))
-                                slugs.Add(match.Groups[1].Value.Trim());
-                        }
-
-                        // fabric.mod.json (Fabric/Quilt) — 含 "id": "xxx"
-                        var fabricEntry = jar.GetEntry("fabric.mod.json");
-                        if (fabricEntry is not null)
-                        {
-                            using var stream = fabricEntry.Open();
-                            using var reader = new StreamReader(stream);
-                            var content = reader.ReadToEnd();
-                            foreach (System.Text.RegularExpressions.Match match in System.Text.RegularExpressions.Regex.Matches(content, @"""id""\s*:\s*""([^""]+)"""))
-                                slugs.Add(match.Groups[1].Value.Trim());
-                        }
-
-                        // quilt.mod.json (Quilt 原生)
-                        var quiltEntry = jar.GetEntry("quilt.mod.json");
-                        if (quiltEntry is not null)
-                        {
-                            using var stream = quiltEntry.Open();
-                            using var reader = new StreamReader(stream);
-                            var content = reader.ReadToEnd();
-                            foreach (System.Text.RegularExpressions.Match match in System.Text.RegularExpressions.Regex.Matches(content, @"""id""\s*:\s*""([^""]+)"""))
-                                slugs.Add(match.Groups[1].Value.Trim());
-                        }
-
-                        // mcmod.info (旧版 Forge/LiteLoader)
-                        var infoEntry = jar.GetEntry("mcmod.info");
-                        if (infoEntry is not null)
-                        {
-                            using var stream = infoEntry.Open();
-                            using var reader = new StreamReader(stream);
-                            var content = reader.ReadToEnd();
-                            foreach (System.Text.RegularExpressions.Match match in System.Text.RegularExpressions.Regex.Matches(content, @"""modid""\s*:\s*""([^""]+)"""))
-                                slugs.Add(match.Groups[1].Value.Trim());
-                        }
+                        using var stream = tomlEntry.Open();
+                        using var reader = new StreamReader(stream);
+                        var content = reader.ReadToEnd();
+                        foreach (System.Text.RegularExpressions.Match match in System.Text.RegularExpressions.Regex.Matches(content, @"modId\s*=\s*[""']([^""']+)[""']"))
+                            modIds.Add(match.Groups[1].Value.Trim());
                     }
-                    catch (IOException)
+
+                    // fabric.mod.json (Fabric/Quilt) — 含 "id": "xxx"
+                    var fabricEntry = jar.GetEntry("fabric.mod.json");
+                    if (fabricEntry is not null)
                     {
-                        // jar 被其他进程短暂持有，跳过
+                        using var stream = fabricEntry.Open();
+                        using var reader = new StreamReader(stream);
+                        var content = reader.ReadToEnd();
+                        foreach (System.Text.RegularExpressions.Match match in System.Text.RegularExpressions.Regex.Matches(content, @"""id""\s*:\s*""([^""]+)"""))
+                            modIds.Add(match.Groups[1].Value.Trim());
                     }
-                    catch (Exception ex)
+
+                    // quilt.mod.json (Quilt 原生)
+                    var quiltEntry = jar.GetEntry("quilt.mod.json");
+                    if (quiltEntry is not null)
                     {
-                        ModBase.Log(ex, $"隐藏已下载：读取 jar 失败 {Path.GetFileName(jarPath)}", ModBase.LogLevel.Debug);
+                        using var stream = quiltEntry.Open();
+                        using var reader = new StreamReader(stream);
+                        var content = reader.ReadToEnd();
+                        foreach (System.Text.RegularExpressions.Match match in System.Text.RegularExpressions.Regex.Matches(content, @"""id""\s*:\s*""([^""]+)"""))
+                            modIds.Add(match.Groups[1].Value.Trim());
                     }
+
+                    // mcmod.info (旧版 Forge/LiteLoader)
+                    var infoEntry = jar.GetEntry("mcmod.info");
+                    if (infoEntry is not null)
+                    {
+                        using var stream = infoEntry.Open();
+                        using var reader = new StreamReader(stream);
+                        var content = reader.ReadToEnd();
+                        foreach (System.Text.RegularExpressions.Match match in System.Text.RegularExpressions.Regex.Matches(content, @"""modid""\s*:\s*""([^""]+)"""))
+                            modIds.Add(match.Groups[1].Value.Trim());
+                    }
+                }
+                catch (IOException)
+                {
+                    // jar 被其他进程短暂持有，跳过
+                }
+                catch (Exception ex)
+                {
+                    ModBase.Log(ex, $"隐藏已下载：读取 jar 失败 {Path.GetFileName(jarPath)}", ModBase.LogLevel.Debug);
                 }
             }
         }
@@ -492,9 +495,36 @@ public partial class PageComp
             ModBase.Log(ex, "隐藏已下载：扫描本地模组失败", ModBase.LogLevel.Debug);
         }
 
-        _cachedLocalSlugs = slugs;
+        _cachedLocalSlugs = modIds;
         _lastCacheTime = DateTime.Now;
-        return slugs;
+        return modIds;
+    }
+
+    /// <summary>
+    ///     宽松匹配：判断 CompProject 的 Slug 是否对应本地已安装的 modId。
+    ///     原因：CurseForge Slug 可能带加载器后缀（sodium-fabric），jar modId 是 sodium。
+    /// </summary>
+    private static bool _IsLocalInstalled(ModComp.CompProject project, HashSet<string> localModIds)
+    {
+        if (string.IsNullOrEmpty(project.Slug)) return false;
+        var slug = project.Slug.ToLowerInvariant();
+
+        // 直接命中
+        if (localModIds.Contains(slug)) return true;
+
+        // slug 按 "-" 分割后任一段是 modId（处理 sodium-fabric → sodium）
+        foreach (var part in slug.Split('-', StringSplitOptions.RemoveEmptyEntries))
+            if (localModIds.Contains(part)) return true;
+
+        // 反过来：modId 是 slug 的前缀（处理 slug=jei，modId=jei 已包含；但 slug=xyz，modId=xyz-api 则不匹配）
+        // 再宽松一点：slug 以某个 modId 开头（处理 CurseForge 的 slug 可能是 author-modname）
+        foreach (var modId in localModIds)
+        {
+            if (slug.StartsWith(modId + "-", StringComparison.OrdinalIgnoreCase)) return true;
+            if (slug.EndsWith("-" + modId, StringComparison.OrdinalIgnoreCase)) return true;
+        }
+
+        return false;
     }
 
     #endregion
