@@ -100,12 +100,8 @@
                         <local:MyComboBoxItem Content="{DynamicResource Common.Installation.Iris}" Tag="/iris" />
                         <local:MyComboBoxItem Content="{DynamicResource Common.Installation.OptiFine}" Tag="/optifine" />
                     </local:MyComboBox>
-                    <!--按钮 + 隐藏已下载开关-->
+                    <!--按钮组-->
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Grid.Column="6">
-                        <local:MyCheckBox x:Name="CheckHideDownloaded"
-                                            Text="{DynamicResource Download.Comp.Filter.HideDownloaded}"
-                                            ToolTip="{DynamicResource Download.Comp.Filter.HideDownloaded.ToolTip}"
-                                            VerticalAlignment="Center" Margin="3,0,6,0" />
                         <local:MyIconButton x:Name="BtnSearchReset"
                                             SvgIcon="lucide/rotate-ccw"
                                             ToolTip="{DynamicResource Download.Comp.Filter.Reset}" LogoScale="0.9"

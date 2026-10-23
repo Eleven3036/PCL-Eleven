@@ -21,12 +21,6 @@ public partial class PageComp
 
     public ModComp.CompProjectStorage storage = new();
 
-    // 隐藏已下载：本地已安装模组的 Slug 缓存（避免每次都扫 jar）
-    private static HashSet<string>? _cachedLocalSlugs;
-    private static DateTime _lastCacheTime;
-    private const int SlugCacheTTLSeconds = 30; // 30 秒缓存
-    private static string? _lastTargetPath; // 最后一次从实例管理页传过来的目标实例路径（targetVersion 会被 Init 清掉）
-
     // 结果 UI 化
     private void Load_OnFinish()
     {
@@ -34,20 +28,9 @@ public partial class PageComp
         {
             ModBase.Log($"[Comp] 开始可视化{TypeNameSpaced}列表，已储藏 {storage.results.Count} 个结果，当前在第 {page + 1} 页");
 
-            // 隐藏已下载过滤
-            var visibleResults = storage.results;
-            if (CheckHideDownloaded.Checked == true && PageType == ModComp.CompType.Mod)
-            {
-                var localModIds = _GetLocalInstalledSlugs();
-                visibleResults = storage.results
-                    .Where(r => !_IsLocalInstalled(r, localModIds))
-                    .ToList();
-                var targetName = !string.IsNullOrEmpty(_lastTargetPath) ? Path.GetFileName(_lastTargetPath) : "(MC根目录全部)";
-                ModBase.Log($"[Comp] 隐藏已下载：目标={targetName}，本地已安装 {localModIds.Count} 个，剩余 {visibleResults.Count} 个可显示");
-            }
-
             // 列表项
             PanProjects.Children.Clear();
+            var visibleResults = storage.results;
             var index = Math.Min(page * pageSize, visibleResults.Count - 1);
             foreach (var result in visibleResults.GetRange(index, Math.Min(visibleResults.Count - index, pageSize)))
             {
@@ -257,7 +240,6 @@ public partial class PageComp
         TextSearchVersion.KeyDown += EnterTrigger;
         BtnSearchReset.Click += (_, _) => ResetFilter();
         BtnSearchInstallModPack.Click += BtnSearchInstallModPack_Click;
-        CheckHideDownloaded.Change += (_, _) => StartNewSearch();
     }
 
     private void PageCompControls_Inited(object sender, EventArgs e)
@@ -267,9 +249,6 @@ public partial class PageComp
         {
             // 设置目标
             ResetFilter(); // 重置筛选器
-            // 在 targetVersion 被 Init 清掉之前，记住它的路径用于隐藏已下载扫描
-            _lastTargetPath = targetVersion.PathInstance;
-            _cachedLocalSlugs = null; // 清缓存，下次搜索重新扫
             TextSearchVersion.Text = targetVersion.Info.VanillaName;
 
             MyComboBoxItem GetTargetItemByName(string name)
@@ -403,186 +382,12 @@ public partial class PageComp
         ComboSearchLoader.SelectedIndex = 0;
         ComboSearchShaderLoader.SelectedIndex = 0;
         ComboSearchSort.SelectedIndex = 0;
-        CheckHideDownloaded.Checked = false;
         loader.lastFinishedTime = 0L; // 要求强制重新开始
     }
 
     private void BtnSearchReset_Click(object sender, EventArgs e)
     {
         ResetFilter();
-    }
-
-    /// <summary>
-    ///     收集本地已安装模组的 modId。
-    ///     优先扫描 targetVersion（如果从实例管理页跳转过来），
-    ///     否则扫描 MC 根目录下所有实例的 mods。
-    ///     结果缓存 30 秒，避免频繁扫 jar。
-    /// </summary>
-    private static HashSet<string> _GetLocalInstalledSlugs()
-    {
-        // 缓存有效直接返回
-        if (_cachedLocalSlugs is not null && (DateTime.Now - _lastCacheTime).TotalSeconds < SlugCacheTTLSeconds)
-            return _cachedLocalSlugs;
-
-        var modIds = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-        try
-        {
-            var modsFolders = new List<string>();
-
-            // 优先：如果从实例管理页跳转过来，只扫那个实例
-            if (!string.IsNullOrEmpty(_lastTargetPath))
-            {
-                var instanceMods = Path.Combine(_lastTargetPath, "mods");
-                if (Directory.Exists(instanceMods)) modsFolders.Add(instanceMods);
-                ModBase.Log($"[Comp] 隐藏已下载：扫描目标实例 {Path.GetFileName(_lastTargetPath)} 的 mods");
-            }
-            else
-            {
-                // 回退：扫 MC 根目录全局 mods + versions\*\mods
-                var mcFolder = ModFolder.mcFolderSelected;
-                if (!string.IsNullOrEmpty(mcFolder) && Directory.Exists(mcFolder))
-                {
-                    var globalMods = Path.Combine(mcFolder, "mods");
-                    if (Directory.Exists(globalMods)) modsFolders.Add(globalMods);
-
-                    var versionsFolder = Path.Combine(mcFolder, "versions");
-                    if (Directory.Exists(versionsFolder))
-                    {
-                        foreach (var versionDir in Directory.EnumerateDirectories(versionsFolder))
-                        {
-                            var instanceMods = Path.Combine(versionDir, "mods");
-                            if (Directory.Exists(instanceMods)) modsFolders.Add(instanceMods);
-                        }
-                    }
-                    ModBase.Log($"[Comp] 隐藏已下载：无目标实例，扫描 MC 根目录 {modsFolders.Count} 个 mods 文件夹");
-                }
-            }
-
-            foreach (var modsFolder in modsFolders)
-            {
-                foreach (var jarPath in Directory.EnumerateFiles(modsFolder, "*.jar", SearchOption.AllDirectories))
-                {
-                    try
-                    {
-                        using var jar = ZipFile.OpenRead(jarPath);
-                        _ExtractModIdsFromJar(jar, modIds);
-
-                        // 额外扫 Jar-in-Jar 内嵌 jar（Forge 21+ / NeoForge / Fabric 都有）
-                        foreach (var innerEntry in jar.Entries.Where(e =>
-                                     e.FullName.StartsWith("META-INF/jarjar/", StringComparison.OrdinalIgnoreCase) &&
-                                     e.FullName.EndsWith(".jar", StringComparison.OrdinalIgnoreCase)))
-                        {
-                            try
-                            {
-                                using var ms = new System.IO.MemoryStream();
-                                innerEntry.Open().CopyTo(ms);
-                                ms.Position = 0;
-                                using var innerJar = new ZipArchive(ms, ZipArchiveMode.Read);
-                                _ExtractModIdsFromJar(innerJar, modIds);
-                            }
-                            catch { /* 内嵌 jar 解析失败忽略 */ }
-                        }
-                    }
-                    catch (IOException)
-                    {
-                        // jar 被其他进程短暂持有，跳过
-                    }
-                    catch (Exception ex)
-                    {
-                        ModBase.Log(ex, $"隐藏已下载：读取 jar 失败 {Path.GetFileName(jarPath)}", ModBase.LogLevel.Debug);
-                    }
-                }
-            }
-        }
-        catch (Exception ex)
-        {
-            ModBase.Log(ex, "隐藏已下载：扫描本地模组失败", ModBase.LogLevel.Debug);
-        }
-
-        _cachedLocalSlugs = modIds;
-        _lastCacheTime = DateTime.Now;
-        return modIds;
-    }
-
-    /// <summary>
-    ///     从 jar 里提取 modId（支持 Forge/NeoForge/Fabric/Quilt/旧版）。
-    ///     不抛异常，解析失败静默跳过。
-    /// </summary>
-    private static void _ExtractModIdsFromJar(ZipArchive jar, HashSet<string> modIds)
-    {
-        // mods.toml (Forge) + neoforge.mods.toml (NeoForge 21+) — 格式相同
-        foreach (var entryName in new[] { "META-INF/mods.toml", "META-INF/neoforge.mods.toml" })
-        {
-            var entry = jar.GetEntry(entryName);
-            if (entry is null) continue;
-            try
-            {
-                using var stream = entry.Open();
-                using var reader = new StreamReader(stream);
-                var content = reader.ReadToEnd();
-                foreach (System.Text.RegularExpressions.Match match in System.Text.RegularExpressions.Regex.Matches(content, @"modId\s*=\s*[""']([^""']+)[""']"))
-                    modIds.Add(match.Groups[1].Value.Trim());
-            }
-            catch { }
-        }
-
-        // fabric.mod.json (Fabric) + quilt.mod.json (Quilt)
-        foreach (var entryName in new[] { "fabric.mod.json", "quilt.mod.json" })
-        {
-            var entry = jar.GetEntry(entryName);
-            if (entry is null) continue;
-            try
-            {
-                using var stream = entry.Open();
-                using var reader = new StreamReader(stream);
-                var content = reader.ReadToEnd();
-                foreach (System.Text.RegularExpressions.Match match in System.Text.RegularExpressions.Regex.Matches(content, @"""id""\s*:\s*""([^""]+)"""))
-                    modIds.Add(match.Groups[1].Value.Trim());
-            }
-            catch { }
-        }
-
-        // mcmod.info (旧版 Forge/LiteLoader)
-        var info = jar.GetEntry("mcmod.info");
-        if (info is not null)
-        {
-            try
-            {
-                using var stream = info.Open();
-                using var reader = new StreamReader(stream);
-                var content = reader.ReadToEnd();
-                foreach (System.Text.RegularExpressions.Match match in System.Text.RegularExpressions.Regex.Matches(content, @"""modid""\s*:\s*""([^""]+)"""))
-                    modIds.Add(match.Groups[1].Value.Trim());
-            }
-            catch { }
-        }
-    }
-
-    /// <summary>
-    ///     宽松匹配：判断 CompProject 的 Slug 是否对应本地已安装的 modId。
-    ///     原因：CurseForge Slug 可能带加载器后缀（sodium-fabric），jar modId 是 sodium。
-    /// </summary>
-    private static bool _IsLocalInstalled(ModComp.CompProject project, HashSet<string> localModIds)
-    {
-        if (string.IsNullOrEmpty(project.Slug)) return false;
-        var slug = project.Slug.ToLowerInvariant();
-
-        // 直接命中
-        if (localModIds.Contains(slug)) return true;
-
-        // slug 按 "-" 分割后任一段是 modId（处理 sodium-fabric → sodium）
-        foreach (var part in slug.Split('-', StringSplitOptions.RemoveEmptyEntries))
-            if (localModIds.Contains(part)) return true;
-
-        // 反过来：modId 是 slug 的前缀（处理 slug=jei，modId=jei 已包含；但 slug=xyz，modId=xyz-api 则不匹配）
-        // 再宽松一点：slug 以某个 modId 开头（处理 CurseForge 的 slug 可能是 author-modname）
-        foreach (var modId in localModIds)
-        {
-            if (slug.StartsWith(modId + "-", StringComparison.OrdinalIgnoreCase)) return true;
-            if (slug.EndsWith("-" + modId, StringComparison.OrdinalIgnoreCase)) return true;
-        }
-
-        return false;
     }
 
     #endregion
