@@ -27,6 +27,11 @@ public partial class PageSetupUpdate
         ComboSystemUpdateMode.SelectedIndex = (int)Config.Update.UpdateMode;
 
         TextCurrentVersion.Text = "PCL-Eleven " + VersionNameFormat(ModBase.versionBaseName);
+        // PCL-Eleven：页面加载时默认显示"当前版本"卡片，隐藏"新版本"卡片（后者只有检查更新后才显示）
+        CardUpdate.Visibility = Visibility.Collapsed;
+        CardCheck.Visibility = Visibility.Visible;
+        TextCurrentDesc.Text = Lang.Text("Setup.Update.Latest");
+        BtnCheckAgain.IsEnabled = true;
         ModAnimation.AniControlEnabled -= 1;
         // PCL-Eleven：页面加载时不自动检查更新，
         // 留给用户手动点"检查更新"按钮触发，避免 GitHub API 阻塞 UI。

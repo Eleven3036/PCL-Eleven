@@ -575,10 +575,18 @@ public static class ModLibrary
                         .Replace(token.Url.Substring(0, token.Url.IndexOfF("maven")),
                             "https://bmclapi2.bangbang93.com/").Replace("maven.fabricmc.net", "maven")
                         .Replace("maven.minecraftforge.net", "maven").Replace("maven.neoforged.net/releases", "maven");
+                    // PCL-Eleven: NeoForge 国内 maven.neoforged.net 被墙，BMCLAPI 对 NeoForge 返回 404，
+                    // 追加华为云镜像作为最优先备选（repo.huaweicloud.com/neoforge/releases）
+                    if (token.Url.Contains("maven.neoforged.net"))
+                    {
+                        var huaweiUrl = token.Url.Replace("maven.neoforged.net/releases",
+                            "repo.huaweicloud.com/neoforge/releases");
+                        urls.Insert(0, huaweiUrl); // 华为云放最前面
+                    }
                     if (ModDownload.DlSourcePreferMojang)
                         urls.Add(bmclapiUrl); // 官方源优先
                     else
-                        urls.Insert(0, bmclapiUrl); // 镜像源优先
+                        urls.Insert(0, bmclapiUrl); // 镜像源优先（华为云已在 0，BMCLAPI 插 1）
                 }
             }
 

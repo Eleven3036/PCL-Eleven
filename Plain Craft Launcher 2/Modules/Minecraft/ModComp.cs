@@ -1452,10 +1452,9 @@ public static class ModComp
 
         private async Task<string> GetChineseDescriptionAsync()
         {
-            var from = FromCurseForge ? "curseforge" : "modrinth";
-            var para = FromCurseForge ? "modId" : "project_id";
             string result = null;
 
+            // 缓存 key: 模组 ID + Description MD5，Description 变了自动重新翻译
             var descHash = $"{Id}{ModBase.GetStringMD5(Description)}";
             var cacheFilePath = $@"{ModBase.pathTemp}Cache\CompTranslation.ini";
             var cacheTranslation = ModBase.ReadIni(cacheFilePath, descHash);
@@ -1465,36 +1464,42 @@ public static class ModComp
                 return result;
             }
 
+            // Description 为空则跳过
+            if (string.IsNullOrWhiteSpace(Description))
+                return null;
+
             try
             {
-                var jsonObject = (JsonObject)await 
-                    Requester.FetchJsonAsync($"https://mod.mcimirror.top/translate/{from}/{Id}");
-                if (jsonObject.ContainsKey("translated"))
+                // PCL-Eleven：原 mcimirror.top 翻译服务已永久下线（503），
+                // 改用 MyMemory 免费翻译 API（无需 API Key，每日 5000 次限额）。
+                // 文档: https://mymemory.translated.net/doc/spec.php
+                var escaped = Uri.EscapeDataString(Description);
+                var url = $"https://api.mymemory.translated.net/get?q={escaped}&langpair=en|zh-CN";
+                var jsonObject = (JsonObject)await Requester.FetchJsonAsync(url);
+
+                // MyMemory 返回格式: {"responseData": {"translatedText": "..."}, "matches": [...]}
+                // 使用原代码风格的索引器链式访问 + ContainsKey 防御式检查
+                if (jsonObject.ContainsKey("responseData")
+                    && jsonObject["responseData"] is JsonObject rdObj
+                    && rdObj.ContainsKey("translatedText"))
                 {
-                    result = jsonObject["translated"].ToString();
-                    ModBase.WriteIni(cacheFilePath, descHash, ModBase.Base64Encode(result));
+                    var translated = rdObj["translatedText"]?.ToString();
+                    if (!string.IsNullOrWhiteSpace(translated))
+                    {
+                        result = translated;
+                        // 写入本地缓存，下次同一个 Description 直接命中
+                        ModBase.WriteIni(cacheFilePath, descHash, ModBase.Base64Encode(result));
+                    }
                 }
             }
             catch (HttpRequestException ex)
             {
-                if (ex.Message.Contains("404"))
-                {
-                    ModMain.MyMsgBox(Lang.Text("Download.Comp.Detail.DescriptionNoTranslation"), Lang.Text("Download.Comp.Detail.DescriptionTranslationFailed"), Lang.Text("Download.Comp.Detail.KnownButton"));
-                    return null;
-                }
-
-                ModBase.Log(
-                    ex,
-                    "获取中文描述时出现错误",
-                    ModBase.LogLevel.Hint,
+                ModBase.Log(ex, "MyMemory 翻译服务请求失败 (网络/HTTP 错误)", ModBase.LogLevel.Hint,
                     userSummary: Lang.Text("Minecraft.Comp.Error.OperationFailed"));
             }
             catch (Exception ex)
             {
-                ModBase.Log(
-                    ex,
-                    "获取中文描述时出现错误",
-                    ModBase.LogLevel.Hint,
+                ModBase.Log(ex, "获取中文描述时出现错误", ModBase.LogLevel.Hint,
                     userSummary: Lang.Text("Minecraft.Comp.Error.OperationFailed"));
             }
 

@@ -1649,9 +1649,13 @@ public static class ModDownloadLib
                 // NeoForge
                 var neo = (ModDownload.DlNeoForgeListEntry)info;
                 var url = neo.UrlBase + "-installer.jar";
+                // PCL-Eleven: 华为云镜像优先（maven.neoforged.net 国内被墙，BMCLAPI 对 NeoForge 返回 404）
                 files.Add(new DownloadFile(
-                    new[] { url.Replace("maven.neoforged.net/releases", "bmclapi2.bangbang93.com/maven"), url }, target,
-                    new ModBase.FileChecker(64 * 1024)));
+                    new[] {
+                        url.Replace("maven.neoforged.net/releases", "repo.huaweicloud.com/neoforge/releases"),
+                        url.Replace("maven.neoforged.net/releases", "bmclapi2.bangbang93.com/maven"),
+                        url
+                    }, target, new ModBase.FileChecker(64 * 1024)));
             }
             else if (info.forgeType == ModDownload.DlForgelikeEntry.ForgelikeType.Cleanroom)
             {
@@ -2035,9 +2039,13 @@ public static class ModDownloadLib
                 // NeoForge
                 var neo = (ModDownload.DlNeoForgeListEntry)info;
                 var url = neo.UrlBase + "-installer.jar";
+                // PCL-Eleven: 华为云镜像优先（maven.neoforged.net 国内被墙，BMCLAPI 对 NeoForge 返回 404）
                 files.Add(new DownloadFile(
-                    new[] { url.Replace("maven.neoforged.net/releases", "bmclapi2.bangbang93.com/maven"), url },
-                    installerAddress, new ModBase.FileChecker(64 * 1024)));
+                    new[] {
+                        url.Replace("maven.neoforged.net/releases", "repo.huaweicloud.com/neoforge/releases"),
+                        url.Replace("maven.neoforged.net/releases", "bmclapi2.bangbang93.com/maven"),
+                        url
+                    }, installerAddress, new ModBase.FileChecker(64 * 1024)));
             }
             else if (info.forgeType == ModDownload.DlForgelikeEntry.ForgelikeType.Cleanroom)
             {

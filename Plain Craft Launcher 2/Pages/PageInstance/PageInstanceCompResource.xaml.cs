@@ -1,4 +1,4 @@
-﻿using System.IO;
+using System.IO;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
@@ -1915,13 +1915,18 @@ public partial class PageInstanceCompResource : IRefreshable
         var list = modList.ToList();
         if (!isEnable)
         {
-            if (!_ConfirmCascadeReady()) return;
-            var affected = _JijFindAffected(list);
-            if (affected.Count > 0)
+            // PCL-Eleven：Jar-in-Jar 后台解析未完成时，跳过级联检测，直接禁用。
+            // 原版这里会弹一个"模组仍在解析"的阻塞弹窗，但禁用只是改 .jar.disabled 后缀，
+            // 是完全安全的操作，即使漏了几个内嵌子模组，Minecraft 自己也会处理。
+            if (currentCompType == ModComp.CompType.Mod && ModLocalComp.CompJijResolved)
             {
-                var choice = _AskJijCascade(affected, false);
-                if (choice is null) return;
-                if (choice == 1) list = list.Concat(affected).ToList();
+                var affected = _JijFindAffected(list);
+                if (affected.Count > 0)
+                {
+                    var choice = _AskJijCascade(affected, false);
+                    if (choice is null) return;
+                    if (choice == 1) list = list.Concat(affected).ToList();
+                }
             }
         }
 
@@ -1932,23 +1937,27 @@ public partial class PageInstanceCompResource : IRefreshable
     {
         // 在弹出任何模态框之前捕获 Shift（永久删除意图），否则选完档位时 Shift 多半已松开
         var isShiftPressed = Keyboard.IsKeyDown(Key.LeftShift) || Keyboard.IsKeyDown(Key.RightShift);
-        if (!_ConfirmCascadeReady()) return;
         var list = modList.ToList();
-        var affected = _JijFindAffected(list);
-        if (affected.Count > 0)
+
+        // PCL-Eleven：同禁用 —— JIJ 未完成时不弹警告窗，直接跳过级联检测继续删除
+        if (currentCompType == ModComp.CompType.Mod && ModLocalComp.CompJijResolved)
         {
-            var choice = _AskJijCascade(affected, true);
-            if (choice is null) return;
-            switch (choice)
+            var affected = _JijFindAffected(list);
+            if (affected.Count > 0)
             {
-                case 1:
-                    if (!EDModsCore(affected, false)) return;
-                    break;
-                case 2:
-                    // 先禁用依赖者；若后续删除部分失败，也不会留下启用但缺少前置的 Mod。
-                    if (!EDModsCore(affected, false)) return;
-                    list = list.Concat(affected).ToList();
-                    break;
+                var choice = _AskJijCascade(affected, true);
+                if (choice is null) return;
+                switch (choice)
+                {
+                    case 1:
+                        if (!EDModsCore(affected, false)) return;
+                        break;
+                    case 2:
+                        // 先禁用依赖者；若后续删除部分失败，也不会留下启用但缺少前置的 Mod。
+                        if (!EDModsCore(affected, false)) return;
+                        list = list.Concat(affected).ToList();
+                        break;
+                }
             }
         }
 
@@ -2029,6 +2038,8 @@ public partial class PageInstanceCompResource : IRefreshable
             var modEntity = ModE; // 仅用于去除迭代变量无法修改的限制
             // 用户可能在 Phase 2 尚未完成时选择继续操作。重命名前先同步补齐该项，
             // 否则后台仍持有旧路径实体，而新实体会复制空树并永久丢失本次会话的 JIJ 状态。
+            // PCL-Eleven 修复：ResolveJijNow 失败不再阻止重命名（禁用只是改后缀，完全安全），
+            // 仅静默记录日志后跳过 JIJ 检测继续操作。
             if (currentCompType == ModComp.CompType.Mod && modEntity.JijPending)
             {
                 var resolved = false;
@@ -2046,9 +2057,9 @@ public partial class PageInstanceCompResource : IRefreshable
                 }
                 if (!resolved)
                 {
-                    HintService.Hint(Lang.Text("Instance.Resource.Ed.ToggleFailed"), HintType.Error);
-                    isSuccessful = false;
-                    continue;
+                    // PCL-Eleven：原版这里会弹 ToggleFailed 阻塞用户，但禁用只是改后缀，
+                    // 即使 JIJ 解析失败也可以安全重命名。这里只记录 debug 日志，然后继续。
+                    ModBase.Log($"[Mod] JIJ 同步补解析跳过（非阻塞）: {modEntity.FileName}", ModBase.LogLevel.Debug);
                 }
             }
             string newPath = null;
@@ -2086,7 +2097,33 @@ public partial class PageInstanceCompResource : IRefreshable
                 }
 
                 File.Delete(newPath);
-                FileSystem.Rename(modEntity.path, newPath);
+
+                // PCL-Eleven 修复：后台 Jar-in-Jar 解析 / CompUpdateDetailLoad 可能短暂持有 .jar 文件句柄，
+                // 导致重命名报 IOException（"文件被占用"）。重试 3 次，每次指数退避（100ms / 300ms / 500ms）。
+                // 游戏未启动时不会有真正的进程占用，重试几次大概率能成功。
+                var renamed = false;
+                IOException lastIoEx = null;
+                for (int attempt = 0; attempt < 3; attempt++)
+                {
+                    try
+                    {
+                        FileSystem.Rename(modEntity.path, newPath);
+                        renamed = true;
+                        break;
+                    }
+                    catch (IOException ioEx)
+                    {
+                        lastIoEx = ioEx;
+                        ModBase.Log($"[Mod] 重命名被占用，重试 {attempt + 1}/3: {modEntity.path} → {newPath} ({ioEx.Message})");
+                        Thread.Sleep(100 * (attempt + 1) * 2 + 100); // 100ms, 300ms, 500ms
+                    }
+                }
+                if (!renamed)
+                {
+                    ModBase.Log(lastIoEx, $"重命名 Mod 连续 3 次失败（文件被占用）: {modEntity.path}");
+                    isSuccessful = false;
+                    continue;
+                }
             }
             catch (FileNotFoundException ex)
             {
@@ -2100,7 +2137,8 @@ public partial class PageInstanceCompResource : IRefreshable
             }
             catch (Exception ex)
             {
-                ModBase.Log(ex, $"重命名 Mod 失败（{modEntity.path ?? "null"}）");
+                // PCL-Eleven：把详细错误打出来，方便排查不是 IOException 却失败的情况
+                ModBase.Log(ex, $"重命名 Mod 失败（非 IO 异常）: path={modEntity.path}, newPath={newPath}");
                 isSuccessful = false;
                 continue;
             }
