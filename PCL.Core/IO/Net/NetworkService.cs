@@ -135,17 +135,24 @@ public partial class NetworkService
         _provider?.Dispose();
     }
 
-    private static SocketsHttpHandler _GetSocketsHttpHandler() => new SocketsHttpHandler
+    private static SocketsHttpHandler _GetSocketsHttpHandler()
     {
-        UseProxy = true,
-        AutomaticDecompression = DecompressionMethods.All,
-        Proxy = HttpProxyManager.Instance,
-        AllowAutoRedirect = true,
-        MaxAutomaticRedirections = 20,
-        UseCookies = false,
-        EnableMultipleHttp2Connections = true,
-        ConnectCallback = Config.Network.EnableDoH ? HostConnectionHandler.Instance.GetConnectionAsync : null
-    };
+        var hasProxy = HttpProxyManager.Instance is not null;
+        return new SocketsHttpHandler
+        {
+            UseProxy = true,
+            AutomaticDecompression = DecompressionMethods.All,
+            Proxy = HttpProxyManager.Instance,
+            AllowAutoRedirect = true,
+            MaxAutomaticRedirections = 20,
+            UseCookies = false,
+            EnableMultipleHttp2Connections = true,
+            // 有代理时禁用 DoH ConnectCallback —— ConnectCallback 会完全跳过代理层导致直连超时
+            ConnectCallback = !hasProxy && Config.Network.EnableDoH
+                ? HostConnectionHandler.Instance.GetConnectionAsync
+                : null
+        };
+    }
 
     /// <summary>
     /// 获取 HttpClient
